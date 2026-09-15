@@ -39,6 +39,11 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
         return ZombifiedHumanEntity.createZombifiedHumanAttributes();
     }
 
+    @Override
+    public net.minecraft.util.Identifier getLootTableId() {
+        return EntityType.HUSK.getLootTableId();
+    }
+
     public ZombifiedHumanHuskEntity(EntityType<? extends ZombieEntity> entityType, World world) {
         super(entityType, world);
     }

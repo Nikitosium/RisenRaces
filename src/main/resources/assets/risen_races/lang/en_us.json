@@ -8,6 +8,9 @@
   "item.risen_races.human_spawn_egg": "Human Spawn Egg",
   "item.risen_races.risen_piglin_spawn_egg": "Risen Piglin Spawn Egg",
   "item.risen_races.rynar_spawn_egg": "Rynar Spawn Egg",
+  "item.risen_races.zombified_human_spawn_egg": "Zombie Spawn Egg",
+  "item.risen_races.zombified_human_husk_spawn_egg": "Husk Spawn Egg",
+  "item.risen_races.zombified_human_drowned_spawn_egg": "Drowned Spawn Egg",
   "risen_races.overpopulation": "The %s doesn't have enough room for %s more people, please expand the %s",
   "risen_races.settlement.default": "village",
   "entity.minecraft.villager": "Rynar"

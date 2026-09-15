@@ -2,11 +2,13 @@ package hik1tka.risen_races.client.zombie;
 
 import hik1tka.risen_races.entity.zombie.ZombifiedHumanDrownedEntity;
 import hik1tka.risen_races.mixin.BipedModelAccessor;
+import hik1tka.risen_races.mixin.DrownedOverlayModelAccessor;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
+import net.minecraft.client.render.entity.feature.DrownedOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -34,24 +36,40 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
     private static final float FEMALE_ARM_SCALE = 0.82f;
     private static final float MALE_ARM_SCALE = 1.0f;
 
+    private final DrownedOverlayFeatureRenderer<ZombifiedHumanDrownedEntity> outerLayer;
+
     public ZombifiedHumanDrownedRenderer(EntityRendererFactory.Context context) {
         super(context, new DrownedEntityModel<>(context.getPart(EntityModelLayers.DROWNED)), 0.5F);
+        // Вбудований шар з мокрими наростами/подтьоками поверх базової моделі -
+        // саме він раніше не рендерився. Ідентична текстура/логіка ванільного
+        // DrownedEntityRenderer, свого не треба - текстуру для нього клас
+        // тримає в собі сам (textures/entity/zombie/drowned_outer_layer.png).
+        this.outerLayer = new DrownedOverlayFeatureRenderer<>(this, context.getModelLoader());
+        this.addFeature(this.outerLayer);
     }
 
     @Override
     public void render(ZombifiedHumanDrownedEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
-        BipedModelAccessor accessor = (BipedModelAccessor) this.getModel();
+        float armScale = entity.isFemale() ? FEMALE_ARM_SCALE : MALE_ARM_SCALE;
+
+        applyArmScale(this.getModel(), armScale);
+        // Зовнішній шар тримає СВІЙ ОКРЕМИЙ екземпляр моделі (не той, що в
+        // базового рендерера) - без цього руки на наростах/плямах лишались
+        // повнорозмірними незалежно від статі, хоча базове тіло скейлилось.
+        applyArmScale(((DrownedOverlayModelAccessor) this.outerLayer).getModel(), armScale);
+
+        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+    }
+
+    private static void applyArmScale(Object model, float armScale) {
+        BipedModelAccessor accessor = (BipedModelAccessor) model;
         ModelPart leftArm = accessor.getLeftArm();
         ModelPart rightArm = accessor.getRightArm();
-
-        float armScale = entity.isFemale() ? FEMALE_ARM_SCALE : MALE_ARM_SCALE;
         leftArm.xScale = armScale;
         leftArm.zScale = armScale;
         rightArm.xScale = armScale;
         rightArm.zScale = armScale;
-
-        super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
     @Override

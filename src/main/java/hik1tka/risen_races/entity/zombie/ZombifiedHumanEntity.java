@@ -76,6 +76,11 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
+    @Override
+    public net.minecraft.util.Identifier getLootTableId() {
+        return net.minecraft.entity.EntityType.ZOMBIE.getLootTableId();
+    }
+
     public static DefaultAttributeContainer.Builder createZombifiedHumanAttributes() {
         return ZombieEntity.createZombieAttributes();
     }

@@ -87,6 +87,11 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         return ZombieEntity.createZombieAttributes();
     }
 
+    @Override
+    public Identifier getLootTableId() {
+        return EntityType.DROWNED.getLootTableId();
+    }
+
     public ZombifiedHumanDrownedEntity(EntityType<? extends DrownedEntity> entityType, World world) {
         super(entityType, world);
     }
