@@ -21,11 +21,6 @@ public interface IZombifiedHuman {
     void setProfession(String profession);
     @Nullable NbtCompound getNpcMemory();
     void setNpcMemory(@Nullable NbtCompound memory);
-
-    /**
-     * Згенерувати випадкові стать/професію для "дикого" спавну
-     * (природний спавнер або заміна ванільного зомбі). НЕ для конвертації
-     * з живої людини - там ці значення ставлять напряму з даних людини.
-     */
     void rollRandomSpawnData();
+    boolean isBaby();
 }

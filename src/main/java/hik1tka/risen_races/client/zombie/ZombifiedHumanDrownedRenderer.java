@@ -62,6 +62,13 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    @Override
+    protected void scale(ZombifiedHumanDrownedEntity entity, MatrixStack matrices, float amount) {
+        if (entity.isBaby()) {
+            matrices.scale(0.5F, 0.5F, 0.5F);
+        }
+    }
+
     private static void applyArmScale(Object model, float armScale) {
         BipedModelAccessor accessor = (BipedModelAccessor) model;
         ModelPart leftArm = accessor.getLeftArm();

@@ -182,9 +182,11 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
 
     @Override
     public float getSoundPitch() {
-        // Базові звуки тут - утопцеві (успадковані від DrownedEntity разом з
-        // "водяними"/"сухопутними" варіантами ambient/hurt/death), гендер
-        // лише крутить пітч - той самий прийом, що в ZombifiedHumanEntity.
+        // Той самий момент, що в ZombifiedHumanEntity - DrownedEntity теж не
+        // піднімає пітч дитині сам.
+        if (this.isBaby()) {
+            return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F;
+        }
         float base = super.getSoundPitch();
         return isFemale() ? base * 1.15f : base * 0.9f;
     }

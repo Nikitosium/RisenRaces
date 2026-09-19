@@ -47,6 +47,13 @@ public class ZombifiedHumanEntityRenderer extends MobEntityRenderer<ZombifiedHum
     }
 
     @Override
+    protected void scale(ZombifiedHumanEntity entity, MatrixStack matrices, float amount) {
+        if (entity.isBaby()) {
+            matrices.scale(0.5F, 0.5F, 0.5F);
+        }
+    }
+
+    @Override
     public Identifier getTexture(ZombifiedHumanEntity entity) {
         return TEXTURE;
     }

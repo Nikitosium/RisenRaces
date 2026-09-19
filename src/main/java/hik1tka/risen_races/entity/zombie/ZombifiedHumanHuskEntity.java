@@ -73,4 +73,14 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
         }
         return success;
     }
+
+    @Override
+    public float getSoundPitch() {
+        if (this.isBaby()) {
+            return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F;
+        }
+        float base = super.getSoundPitch();
+        return isFemale() ? base * 1.15f : base * 0.9f;
+    }
+
 }

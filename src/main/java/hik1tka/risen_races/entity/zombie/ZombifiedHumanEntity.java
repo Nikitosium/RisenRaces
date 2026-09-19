@@ -154,6 +154,12 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
 
     @Override
     public float getSoundPitch() {
+        // ZombieEntity, на відміну від HumanoidEntity, НЕ піднімає пітч
+        // дитині сам (у ваніллі це суто ефект зменшеного розміру моделі,
+        // не голосу) - робимо це тут явно, за тим самим принципом.
+        if (this.isBaby()) {
+            return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F;
+        }
         float base = super.getSoundPitch();
         return isFemale() ? base * 1.15f : base * 0.9f;
     }
