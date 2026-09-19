@@ -15,7 +15,7 @@ public class RisenRaces implements ModInitializer {
     //Initialise registry
     @Override
     public void onInitialize() {
-        LOGGER.info("Mod has been initialised");
+        LOGGER.info(MOD_ID +"Mod has been initialised");
 
         ModEffect.registerModEffect();
         ModEffect.registerEffects();
