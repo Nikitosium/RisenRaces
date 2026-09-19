@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -81,10 +82,20 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
     @Nullable
     private NbtCompound npcMemory;
 
+    /**
+     * ВАЖЛИВО: .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE, 0.0)
+     * тут навмисно - раніше цей рядок був відсутній, тож утопець успадковував
+     * ванільний шанс "покликати підкріплення" від ZombieEntity.createZombieAttributes()
+     * (DrownedEntity сам є ZombieEntity) - на Hard-складності поранений
+     * утопець міг спавнити поруч ще одного утопця. Саме це, найімовірніше, і
+     * виглядало як "дублювання".
+     * TODO: якщо константа EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE
+     * відсутня/перейменована у твоєму Yarn мапінгу - звір точну назву в
+     * декомпільованому ZombieEntity.createZombieAttributes().
+     */
     public static DefaultAttributeContainer.Builder createZombifiedHumanDrownedAttributes() {
-        // Ванільний утопець не додає нічого поверх зомбачих атрибутів -
-        // той самий набір, що і раніше, щоб не міняти баланс існуючих утопців.
-        return ZombieEntity.createZombieAttributes();
+        return ZombieEntity.createZombieAttributes()
+                .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0);
     }
 
     @Override

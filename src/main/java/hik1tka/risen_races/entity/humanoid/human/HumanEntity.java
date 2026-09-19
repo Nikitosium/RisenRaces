@@ -199,6 +199,13 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         if (zombie == null) return;
 
         zombie.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+        // ВАЖЛИВО: без цього рядка щойно заспавнений зомбі завжди isBaby()==false,
+        // навіть якщо конвертується дитина - IsBaby у пам'яті нижче використовується
+        // лише при ЛІКУВАННІ (відновленні людини), а на сам зомбі ніколи не
+        // переносився. Саме тому не працював скейл моделі (renderer.scale()
+        // перевіряє entity.isBaby()) і звуковий пітч (getSoundPitch() теж
+        // перевіряє isBaby() першим) для зомбі, що виник із дитини.
+        zombie.setBaby(this.isBaby());
 
         net.minecraft.nbt.NbtCompound memory = new net.minecraft.nbt.NbtCompound();
         memory.putBoolean("WasFemale", this.isFemale());

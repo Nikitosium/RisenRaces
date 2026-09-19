@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -81,8 +82,21 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return net.minecraft.entity.EntityType.ZOMBIE.getLootTableId();
     }
 
+    /**
+     * ВАЖЛИВО: .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE, 0.0)
+     * тут навмисно - без цього рядка спадкований від ZombieEntity.createZombieAttributes()
+     * ванільний шанс "покликати підкріплення" лишається активним: на Hard-
+     * складності поранений зомбі-людина (і кадавр, який бере цей самий
+     * білдер - див. ZombifiedHumanHuskEntity.createZombifiedHumanHuskAttributes())
+     * міг спавнити поруч ще одного зомбі - саме це і виглядало як
+     * "дублювання" при ударі по ньому.
+     * TODO: якщо константа EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE
+     * відсутня/перейменована у твоєму Yarn мапінгу - звір точну назву в
+     * декомпільованому ZombieEntity.createZombieAttributes().
+     */
     public static DefaultAttributeContainer.Builder createZombifiedHumanAttributes() {
-        return ZombieEntity.createZombieAttributes();
+        return ZombieEntity.createZombieAttributes()
+                .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0);
     }
 
     public ZombifiedHumanEntity(EntityType<? extends ZombieEntity> entityType, World world) {
