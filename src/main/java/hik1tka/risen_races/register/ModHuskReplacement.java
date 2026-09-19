@@ -10,10 +10,6 @@ import net.minecraft.item.Items;
 public class ModHuskReplacement {
 
     public static void register() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
-            entries.getDisplayStacks().removeIf(stack -> stack.getItem() == Items.HUSK_SPAWN_EGG);
-            entries.getSearchTabStacks().removeIf(stack -> stack.getItem() == Items.HUSK_SPAWN_EGG);
-        });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity.getClass() != HuskEntity.class) return;

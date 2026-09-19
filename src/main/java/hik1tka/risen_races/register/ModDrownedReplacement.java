@@ -10,10 +10,6 @@ import net.minecraft.item.Items;
 public class ModDrownedReplacement {
 
     public static void register() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
-            entries.getDisplayStacks().removeIf(stack -> stack.getItem() == Items.DROWNED_SPAWN_EGG);
-            entries.getSearchTabStacks().removeIf(stack -> stack.getItem() == Items.DROWNED_SPAWN_EGG);
-        });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity.getClass() != DrownedEntity.class) return;
