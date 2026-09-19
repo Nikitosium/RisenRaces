@@ -14,7 +14,6 @@ public class ModEntity {
     public static void registerModEntity(){
         RisenRaces.LOGGER.info("Register Mod Entities for " + RisenRaces.MOD_ID);
 
-
         FabricDefaultAttributeRegistry.register(HumanEntity.HUMAN, HumanEntity.createHumanAttributes());
         FabricDefaultAttributeRegistry.register(RisenPiglinEntity.RISEN_PIGLIN, RisenPiglinEntity.createRisenPiglinAttributes());
         FabricDefaultAttributeRegistry.register(RynarEntity.RYNAR, RynarEntity.createRynarAttributes());

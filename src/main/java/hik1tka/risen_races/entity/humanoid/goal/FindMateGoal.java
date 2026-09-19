@@ -8,12 +8,6 @@ import net.minecraft.util.math.Box;
 import java.util.EnumSet;
 import java.util.List;
 
-
-
-
-
-
-
 public class FindMateGoal extends Goal {
 
     private static final double SEARCH_RADIUS = 8.0D;

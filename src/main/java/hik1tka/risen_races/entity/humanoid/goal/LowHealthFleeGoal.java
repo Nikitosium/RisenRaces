@@ -7,22 +7,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.EnumSet;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class LowHealthFleeGoal extends Goal {
 
     private static final float HEALTH_THRESHOLD = 5.0f;

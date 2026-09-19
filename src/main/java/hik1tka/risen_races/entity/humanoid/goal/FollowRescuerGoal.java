@@ -8,15 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-
-
-
-
-
-
-
-
-
 public class FollowRescuerGoal extends Goal {
 
     private static final double FOLLOW_SPEED = 1.0D;

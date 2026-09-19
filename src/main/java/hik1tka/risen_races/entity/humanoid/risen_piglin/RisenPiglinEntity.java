@@ -49,14 +49,8 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
 
     private static final double TRAIN_SEARCH_RADIUS = 16.0D;
 
-
-
-
     @Nullable
     private UUID rescuerUuid;
-
-
-
 
     @Nullable
     private UUID trainLeaderUuid;
@@ -73,7 +67,10 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
     /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-                                 @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+
+            @Nullable EntityData entityData,
+            @Nullable NbtCompound entityNbt) {
+
         this.setRace(HumanoidRace.RIZEN_PIGLIN);
         this.setFemale(this.random.nextBoolean());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
@@ -95,13 +92,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
 
         this.goalSelector.add(4, new FollowRescuerGoal(this));
     }
-
-
-
-
-
-
-
 
     /** Оновлює значення властивості. */
     public void setRescuer(PlayerEntity player) {
@@ -128,13 +118,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         return this.isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-
-
-
-
-
-
-
     private void assignTrainPosition() {
         if (!(this.getWorld() instanceof ServerWorld serverWorld) || rescuerUuid == null) {
             return;
@@ -149,8 +132,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
             this.trainLeaderUuid = null;
             return;
         }
-
-
 
         Set<UUID> alreadyFollowed = new HashSet<>();
         for (RisenPiglinEntity sibling : siblings) {
@@ -174,13 +155,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
 
         this.trainLeaderUuid = (tail != null) ? tail.getUuid() : null;
     }
-
-
-
-
-
-
-
 
     /** Знаходить потрібний обєкт. */
     @Nullable
@@ -217,14 +191,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         return null;
     }
 
-
-
-
-
-
-
-
-
     /** Повертає поточне значення властивості. */
     public float getScaleFactor() {
         if (!this.isBaby()) {
@@ -236,8 +202,6 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
     /** Повертає поточне значення властивості. */
     @Override
     public float getHatYOffset() {
-
-
 
         return -0.125F;
     }

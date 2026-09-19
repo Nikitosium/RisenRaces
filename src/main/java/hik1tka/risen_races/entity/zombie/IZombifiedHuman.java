@@ -3,17 +3,6 @@ package hik1tka.risen_races.entity.zombie;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 
-
-
-
-
-
-
-
-
-
-
-
 public interface IZombifiedHuman {
     boolean isFemale();
     void setFemale(boolean female);

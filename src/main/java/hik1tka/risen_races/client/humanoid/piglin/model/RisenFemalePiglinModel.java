@@ -7,22 +7,6 @@ import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SinglePartEntityModel<T> implements net.minecraft.client.render.entity.model.ModelWithHead {
 
     private final ModelPart root;

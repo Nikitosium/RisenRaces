@@ -8,13 +8,6 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-
-
-
-
-
-
-
 public class RisenPiglinClothingFeatureRenderer extends FeatureRenderer<RisenPiglinEntity, EntityModel<RisenPiglinEntity>> {
 
     public RisenPiglinClothingFeatureRenderer(FeatureRendererContext<RisenPiglinEntity, EntityModel<RisenPiglinEntity>> context) {
@@ -29,13 +22,7 @@ public class RisenPiglinClothingFeatureRenderer extends FeatureRenderer<RisenPig
         String prof = entity.getProfession();
         if (entity.isInvisible() || "none".equals(prof)) return;
 
-
-
-
-
         if ("farmer".equals(prof) || "fisherman".equals(prof)) return;
-
-
 
         Identifier professionId = new Identifier("risen_races",
                 "textures/entity/human/profession/" + prof + ".png");

@@ -15,17 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-
-
-
-
-
-
-
-
-
-
-
 public final class ZombieVariantHelper {
 
     private ZombieVariantHelper() {
@@ -71,11 +60,6 @@ public final class ZombieVariantHelper {
         }
         return ZombieVariant.NORMAL;
     }
-
-
-
-
-
 
     /** Створює потрібний обєкт або сутність. */
     @Nullable

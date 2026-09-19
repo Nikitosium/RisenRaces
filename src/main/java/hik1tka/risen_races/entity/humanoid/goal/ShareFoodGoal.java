@@ -8,12 +8,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-
-
-
-
-
-
 public class ShareFoodGoal extends Goal {
 
     private static final double DETECTION_RADIUS = 8.0D;

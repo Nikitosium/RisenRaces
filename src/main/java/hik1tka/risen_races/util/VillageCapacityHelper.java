@@ -11,49 +11,12 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class VillageCapacityHelper {
 
     private static final double SEARCH_RADIUS = 64.0D;
     private static final long NOON_TICK = 6000L;
 
     private static final Map<ServerWorld, Long> lastAnnouncedDay = new WeakHashMap<>();
-
-
-
-
-
-
-
-
-
 
     /** Повертає поточне значення властивості. */
     public static int getAvailableRoom(HumanoidEntity self) {
@@ -78,37 +41,14 @@ public class VillageCapacityHelper {
         int room = getAvailableRoom(self);
         if (room > 0) return true;
 
-
-
-
         maybeAnnounce(self.getWorld(), -room + 1);
         return false;
     }
-
-
-
-
-
-
-
-
-
-
 
     /** Виконує дію компонента. */
     public static int capBabyCount(HumanoidEntity self, int requestedBabies) {
         return Math.min(requestedBabies, getAvailableRoom(self));
     }
-
-
-
-
-
-
-
-
-
-
 
     /** Виконує дію компонента. */
     public static void announceIfFull(HumanoidEntity self) {
@@ -119,14 +59,6 @@ public class VillageCapacityHelper {
 
         announceNow(world, -room + 1);
     }
-
-
-
-
-
-
-
-
 
     /** Виконує дію компонента. */
     public static void announceQueuedBirths(HumanoidEntity self, int queuedCount) {
@@ -158,13 +90,6 @@ public class VillageCapacityHelper {
     }
 
     private static Text getSettlementName() {
-
-
-
-
-
-
-
         return Text.translatable("risen_races.settlement.default");
     }
 }

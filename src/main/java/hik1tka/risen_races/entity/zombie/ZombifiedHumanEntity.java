@@ -24,16 +24,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-
-
-
-
-
-
-
-
-
-
 public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuman {
 
     public static final EntityType<ZombifiedHumanEntity> ZOMBIFIED_HUMAN = Registry.register(
@@ -54,20 +44,12 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
     };
     private static final float UNEMPLOYED_CHANCE = 0.4f;
 
-
     private static final float ASSUMED_MAX_DIFFICULTY = 6.75f;
     private static final float CURE_CHANCE_AT_MIN_DIFFICULTY = 0.35f;
     private static final float CURE_CHANCE_AT_MAX_DIFFICULTY = 0.10f;
 
     @Nullable
     private NbtCompound npcMemory;
-
-
-
-
-
-
-
 
     /** Ініціалізує стан сутності під час спавну. */
     @Override
@@ -83,18 +65,6 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
     public net.minecraft.util.Identifier getLootTableId() {
         return net.minecraft.entity.EntityType.ZOMBIE.getLootTableId();
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createZombifiedHumanAttributes() {
@@ -145,12 +115,6 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         this.npcMemory = memory;
     }
 
-
-
-
-
-
-
     /** Генерує випадковий стан. */
     public void rollRandomSpawnData() {
         setFemale(this.random.nextBoolean());
@@ -192,27 +156,12 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-
-
-
-
-
-
-
-
     /** Повертає поточне значення властивості. */
     public float getCureChance(ServerWorld world) {
         float localDifficulty = world.getLocalDifficulty(this.getBlockPos()).getClampedLocalDifficulty();
         float t = MathHelper.clamp(localDifficulty / ASSUMED_MAX_DIFFICULTY, 0.0f, 1.0f);
         return MathHelper.lerp(t, CURE_CHANCE_AT_MIN_DIFFICULTY, CURE_CHANCE_AT_MAX_DIFFICULTY);
     }
-
-
-
-
-
-
-
 
     /** Виконує спробу дії. */
     public boolean tryCure(ServerWorld world) {
@@ -228,10 +177,6 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         this.discard();
         return true;
     }
-
-
-
-
 
     /** Створює потрібний обєкт або сутність. */
     @Nullable

@@ -4,22 +4,6 @@ import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.function.BooleanSupplier;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class ConditionalGoal extends Goal {
 
     private final Goal delegate;
@@ -40,9 +24,6 @@ public class ConditionalGoal extends Goal {
     /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
-
-
-
         return condition.getAsBoolean() && delegate.shouldContinue();
     }
 

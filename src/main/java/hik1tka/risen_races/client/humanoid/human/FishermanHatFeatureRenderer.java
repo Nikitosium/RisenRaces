@@ -9,11 +9,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-
-
 
 public class FishermanHatFeatureRenderer<T extends HumanoidEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
     private final FishermanHatModel<T> hatModel;

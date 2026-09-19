@@ -10,20 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class SeekNetherPortalGoal extends Goal {
 
     private static final int SEARCH_RADIUS_XZ = 24;
@@ -63,7 +49,6 @@ public class SeekNetherPortalGoal extends Goal {
     public boolean shouldContinue() {
         if (portalPos == null || !isInNether()) return false;
         if (!piglin.getWorld().getBlockState(portalPos).isOf(Blocks.NETHER_PORTAL)) {
-
             return false;
         }
         return piglin.squaredDistanceTo(
@@ -115,10 +100,6 @@ public class SeekNetherPortalGoal extends Goal {
     private void moveToward(BlockPos pos) {
         piglin.getNavigation().startMovingTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 1.2D);
     }
-
-
-
-
 
     private void moveToSafeStandoff() {
         Vec3d portalCenter = Vec3d.ofCenter(portalPos);

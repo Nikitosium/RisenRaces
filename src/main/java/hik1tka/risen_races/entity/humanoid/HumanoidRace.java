@@ -4,12 +4,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-
-
-
-
-
-
 public enum HumanoidRace {
 
     HUMAN(
@@ -73,11 +67,6 @@ public enum HumanoidRace {
     public DangerBehavior getDangerBehavior() {
         return dangerBehavior;
     }
-
-
-
-
-
 
     public enum DangerBehavior {
         FLEE,

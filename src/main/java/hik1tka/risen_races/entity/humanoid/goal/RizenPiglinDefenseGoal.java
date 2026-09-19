@@ -8,15 +8,6 @@ import net.minecraft.util.math.Box;
 import java.util.EnumSet;
 import java.util.List;
 
-
-
-
-
-
-
-
-
-
 public class RizenPiglinDefenseGoal extends Goal {
 
     private static final double DETECTION_RADIUS = 12.0D;
@@ -74,16 +65,11 @@ public class RizenPiglinDefenseGoal extends Goal {
         piglin.getWorld().playSound(null, piglin.getBlockPos(),
                 net.minecraft.sound.SoundEvents.ENTITY_PIGLIN_ANGRY,
                 net.minecraft.sound.SoundCategory.NEUTRAL, 1.0F, 1.0F);
-
-
         fightSolo();
-
-
         Box allyBox = piglin.getBoundingBox().expand(ALLY_CALL_RADIUS);
         List<HumanoidEntity> allies = piglin.getWorld().getEntitiesByClass(
                 HumanoidEntity.class, allyBox,
                 e -> e != piglin && e.getRace() == piglin.getRace());
-
         for (HumanoidEntity ally : allies) {
             if (piglin.getTarget() != null) {
                 ally.setTarget(piglin.getTarget());

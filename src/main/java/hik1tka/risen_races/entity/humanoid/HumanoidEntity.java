@@ -39,15 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
 public abstract class HumanoidEntity extends MerchantEntity {
-
 
     private static final TrackedData<Integer> RACE =
             DataTracker.registerData(HumanoidEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -56,23 +48,10 @@ public abstract class HumanoidEntity extends MerchantEntity {
     private static final TrackedData<String> PROFESSION =
             DataTracker.registerData(HumanoidEntity.class, TrackedDataHandlerRegistry.STRING);
 
-
-
-
     public static final int INVENTORY_SIZE = 8;
     private final SimpleInventory inventory = new SimpleInventory(INVENTORY_SIZE);
 
-
-
-
-
-
     private record FoodInfo(int points, int babies) {}
-
-
-
-
-
 
     private static final Map<Item, FoodInfo> BREEDING_FOOD_VALUES = Map.ofEntries(
             Map.entry(Items.BREAD, new FoodInfo(4, 1)),
@@ -91,41 +70,25 @@ public abstract class HumanoidEntity extends MerchantEntity {
             Map.entry(Items.ENCHANTED_GOLDEN_APPLE, new FoodInfo(48, 4))
     );
 
-
-
-
-
     /** Перевіряє поточну умову. */
     public static boolean isBreedingFood(Item item) {
         return BREEDING_FOOD_VALUES.containsKey(item);
     }
 
-
-
     public static final int BREEDING_FOOD_REQUIREMENT = 12;
-
 
     @Nullable
     private BlockPos jobSite;
 
-
     private int breedingCooldown = 0;
 
-
-
-
-
-
-
     private int pendingBabies = 0;
-
 
     private long nextPendingBirthTick = -1L;
 
     public HumanoidEntity(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
     }
-
 
     /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createHumanoidAttributes() {
@@ -151,10 +114,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         this.dataTracker.startTracking(PROFESSION, "none");
     }
 
-
-
-
-
     /** Повертає поточне значення властивості. */
     public HumanoidData getHumanoidData() {
         return new HumanoidData(
@@ -164,9 +123,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
                 1
         );
     }
-
-
-
 
     /** Повертає поточне значення властивості. */
     public String getProfession() {
@@ -195,31 +151,15 @@ public abstract class HumanoidEntity extends MerchantEntity {
         setProfession("none");
     }
 
-
-
-
-
-
     /** Повертає поточне значення властивості. */
     public List<ProfessionDefinition> getAvailableProfessions() {
         return List.of();
     }
 
-
-
     /** Повертає поточне значення властивості. */
     public SimpleInventory getInventory() {
         return this.inventory;
     }
-
-
-
-
-
-
-
-
-
 
     /** Перевіряє поточну умову. */
     @Override
@@ -250,10 +190,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
     /** Виконує дію компонента. */
     @Override
     protected void loot(net.minecraft.entity.ItemEntity item) {
-
-
-
-
 
         ItemStack stack = item.getStack();
         if (!canGather(stack)) {
@@ -286,9 +222,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-
-
-
     /** Повертає поточне значення властивості. */
     public int getFoodValueInInventory() {
         int total = 0;
@@ -302,21 +235,10 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return total;
     }
 
-
-
-
-
     /** Перевіряє поточну умову. */
     public boolean hasEnoughFoodToBreed() {
         return getFoodValueInInventory() >= BREEDING_FOOD_REQUIREMENT;
     }
-
-
-
-
-
-
-
 
     /** Повертає поточне значення властивості. */
     public int getTotalFoodItemCount() {
@@ -329,12 +251,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
         return total;
     }
-
-
-
-
-
-
 
     /** Виконує дію компонента. */
     public ItemStack receiveFoodGift(ItemStack stack) {
@@ -354,11 +270,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return stack;
     }
 
-
-
-
-
-
     /** Виконує дію компонента. */
     public boolean shareOneFoodItemWith(HumanoidEntity other) {
         for (int i = 0; i < inventory.size(); i++) {
@@ -375,12 +286,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
         return false;
     }
-
-
-
-
-
-
 
     private int consumeBreedingFoodAndGetBabies() {
         int remaining = BREEDING_FOOD_REQUIREMENT;
@@ -400,18 +305,10 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return bestBabies;
     }
 
-
-
-
-
-
-
     /** Повертає поточне значення властивості. */
     public float getHatYOffset() {
         return 0.0F;
     }
-
-
 
     /** Повертає поточне значення властивості. */
     public HumanoidRace getRace() {
@@ -453,13 +350,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         this.breedingCooldown = 6000;
     }
 
-
-
-
-
-
-
-
     /** Перевіряє поточну умову. */
     public boolean canBreedWith(HumanoidEntity other) {
         if (other == this) return false;
@@ -469,28 +359,14 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return this.hasEnoughFoodToBreed() && other.hasEnoughFoodToBreed();
     }
 
-
-
-
-
-
     /** Виконує дію компонента. */
     public void breedWith(HumanoidEntity partner) {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) return;
         if (!canBreedWith(partner)) return;
 
-
-
         int babiesFromThis = this.consumeBreedingFoodAndGetBabies();
         int babiesFromPartner = partner.consumeBreedingFoodAndGetBabies();
         int requestedBabies = Math.max(babiesFromThis, babiesFromPartner);
-
-
-
-
-
-
-
 
         int babyCount = VillageCapacityHelper.capBabyCount(this, requestedBabies);
 
@@ -520,11 +396,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-
-
-
-
-
     private void spawnOneBaby(ServerWorld serverWorld) {
         HumanoidEntity baby = (HumanoidEntity) getType().create(serverWorld);
         if (baby == null) return;
@@ -532,23 +403,15 @@ public abstract class HumanoidEntity extends MerchantEntity {
         baby.setRace(this.getRace());
         baby.setFemale(this.random.nextBoolean());
 
-
         baby.setBreedingAge(-24000);
-
 
         double offsetX = (this.random.nextDouble() - 0.5D) * 1.5D;
         double offsetZ = (this.random.nextDouble() - 0.5D) * 1.5D;
         baby.refreshPositionAndAngles(this.getX() + offsetX, this.getY(), this.getZ() + offsetZ, 0.0F, 0.0F);
 
-
         onBabyCreated(baby);
         serverWorld.spawnEntityAndPassengers(baby);
     }
-
-
-
-
-
 
     private void queuePendingBabies(int count) {
         boolean wasEmpty = this.pendingBabies <= 0;
@@ -557,21 +420,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
             scheduleNextPendingBirthAttempt(true);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private void scheduleNextPendingBirthAttempt(boolean successfulLastAttempt) {
         long now = this.getWorld().getTime();
@@ -583,21 +431,9 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-
-
-
-
-
-
     /** Обробляє подію життєвого циклу. */
     protected void onBabyCreated(HumanoidEntity baby) {
     }
-
-
-
-
-
-
 
     private boolean isFleeRace() {
         return switch (getRace().getDangerBehavior()) {
@@ -615,40 +451,16 @@ public abstract class HumanoidEntity extends MerchantEntity {
     protected void initGoals() {
         super.initGoals();
         GoalSelector goals = this.goalSelector;
-
-
-
-
-
         goals.add(3, new FindMateGoal(this));
-
-
-
-
-
         goals.add(3, new PickUpFoodGoal(this));
         goals.add(3, new AcquireProfessionGoal(this));
-
-
         goals.add(4, new hik1tka.risen_races.entity.humanoid.goal.ShareFoodGoal(this));
         goals.add(6, new WanderAroundFarGoal(this, 0.6D));
         goals.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         goals.add(8, new LookAroundGoal(this));
-
-
-
-
-
-
-
-
-
-
         goals.add(1, new ConditionalGoal(
                 new PanicUntilSafeGoal(this, 1.3D, 5),
                 this::isFleeRace));
-
-
 
         goals.add(1, new ConditionalGoal(
                 new FleeEntityGoal<>(this, HostileEntity.class, 8.0F, 1.0D, 1.2D),
@@ -659,20 +471,10 @@ public abstract class HumanoidEntity extends MerchantEntity {
                 new RizenPiglinDefenseGoal(this),
                 this::isFightRace));
 
-
-
-
-
-
-
-
-
-
         goals.add(2, new ConditionalGoal(
                 new MeleeAttackGoal(this, 1.2D, false),
                 this::isFightRace));
     }
-
 
     /** Повертає поточне значення властивості. */
     @Override
@@ -691,7 +493,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
     protected SoundEvent getDeathSound() {
         return getRace().getDeathSound();
     }
-
 
     /** Зберігає стан у NBT. */
     @Override
@@ -760,11 +561,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
                 breedingCooldown--;
             }
 
-
-
-
-
-
             if (pendingBabies > 0 && getWorld() instanceof ServerWorld pendingBirthWorld
                     && getWorld().getTime() >= nextPendingBirthTick) {
                 if (VillageCapacityHelper.getAvailableRoom(this) > 0) {
@@ -785,8 +581,6 @@ public abstract class HumanoidEntity extends MerchantEntity {
                 }
             }
 
-
-
             if (jobSite != null && this.age % 20 == 0
                     && getWorld() instanceof ServerWorld serverWorld) {
                 boolean stillValid = getAvailableProfessions().stream()
@@ -801,22 +595,9 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-
-
-
-
-
-
-
-
-
     /** Виконує дію компонента. */
     @Override
     protected void fillRecipes() {
-
-
-
-
     }
 
     /** Перевіряє поточну умову. */

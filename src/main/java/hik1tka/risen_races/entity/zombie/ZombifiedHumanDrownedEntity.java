@@ -30,23 +30,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombifiedHuman {
 
     public static final EntityType<ZombifiedHumanDrownedEntity> ZOMBIFIED_HUMAN_DROWNED = Registry.register(
@@ -57,23 +40,15 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
                     .build()
     );
 
-
-
-
-
     private static final TrackedData<Boolean> IS_FEMALE =
             DataTracker.registerData(ZombifiedHumanDrownedEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<String> PROFESSION =
             DataTracker.registerData(ZombifiedHumanDrownedEntity.class, TrackedDataHandlerRegistry.STRING);
 
-
-
-
     private static final String[] PROFESSION_POOL = {
             "farmer", "butcher", "shepherd", "fisherman", "leatherworker", "cleric", "cartographer"
     };
     private static final float UNEMPLOYED_CHANCE = 0.4f;
-
 
     private static final float ASSUMED_MAX_DIFFICULTY = 6.75f;
     private static final float CURE_CHANCE_AT_MIN_DIFFICULTY = 0.35f;
@@ -81,17 +56,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
 
     @Nullable
     private NbtCompound npcMemory;
-
-
-
-
-
-
-
-
-
-
-
 
     /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createZombifiedHumanDrownedAttributes() {
@@ -109,13 +73,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         super(entityType, world);
     }
 
-
-
-
-
-
-
-
     /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
@@ -131,8 +88,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         this.dataTracker.startTracking(IS_FEMALE, false);
         this.dataTracker.startTracking(PROFESSION, "none");
     }
-
-
 
     /** Перевіряє поточну умову. */
     @Override
@@ -180,8 +135,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
                 : PROFESSION_POOL[this.random.nextInt(PROFESSION_POOL.length)]);
     }
 
-
-
     /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -202,8 +155,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         if (nbt.contains("MD_NPC_Memory")) npcMemory = nbt.getCompound("MD_NPC_Memory");
     }
 
-
-
     /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
@@ -216,18 +167,12 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         return isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-
-
     /** Повертає поточне значення властивості. */
     public float getCureChance(ServerWorld world) {
         float localDifficulty = world.getLocalDifficulty(this.getBlockPos()).getClampedLocalDifficulty();
         float t = MathHelper.clamp(localDifficulty / ASSUMED_MAX_DIFFICULTY, 0.0f, 1.0f);
         return MathHelper.lerp(t, CURE_CHANCE_AT_MIN_DIFFICULTY, CURE_CHANCE_AT_MAX_DIFFICULTY);
     }
-
-
-
-
 
     /** Виконує спробу дії. */
     public boolean tryCure(ServerWorld world) {
@@ -243,10 +188,6 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         this.discard();
         return true;
     }
-
-
-
-
 
     /** Створює потрібний обєкт або сутність. */
     @Nullable

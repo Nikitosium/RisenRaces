@@ -6,14 +6,6 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 import java.util.function.Predicate;
 
-
-
-
-
-
-
-
-
 /** Виконує дію компонента. */
 public record ProfessionDefinition(
         String id,

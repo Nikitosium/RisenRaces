@@ -11,12 +11,6 @@ import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-
-
-
-
-
-
 public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHumanHuskEntity, ZombieEntityModel<ZombifiedHumanHuskEntity>> {
 
     private static final Identifier TEXTURE =

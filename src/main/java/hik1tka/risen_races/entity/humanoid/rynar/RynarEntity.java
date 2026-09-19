@@ -21,11 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-
-
-
-
-
 public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
 
     public static final EntityType<RynarEntity> RYNAR = Registry.register(
@@ -130,7 +125,6 @@ public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-
     }
 
     /** Відновлює стан з NBT. */

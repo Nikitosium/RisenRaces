@@ -45,11 +45,7 @@ public class PanicUntilSafeGoal extends Goal {
         }
 
         if (this.lastAttacker.hasStatusEffect(StatusEffects.INVISIBILITY)) {
-
-
             double armorFactor = this.lastAttacker. getArmorVisibility();
-
-
             if (armorFactor <= 0.0D) {
                 this.safeTimer++;
                 return this.safeTimer < this.maxSafeTicks;
@@ -61,13 +57,10 @@ public class PanicUntilSafeGoal extends Goal {
                 && this.entity.squaredDistanceTo(this.lastAttacker) < 1024.0;
 
         if (canSeeAttacker) {
-
             this.safeTimer = 0;
             return true;
         } else {
-
             this.safeTimer++;
-
             return this.safeTimer < this.maxSafeTicks;
         }
     }

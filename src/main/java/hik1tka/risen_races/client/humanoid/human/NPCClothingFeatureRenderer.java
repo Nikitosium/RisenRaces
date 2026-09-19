@@ -34,7 +34,5 @@ public class NPCClothingFeatureRenderer extends FeatureRenderer<HumanEntity, Pla
 
         renderModel(this.getContextModel(), professionId, matrices, vertexConsumers, light, entity, 1.0F, 1.0F, 1.0F);
 
-
-
     }
 }

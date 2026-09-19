@@ -16,17 +16,6 @@ import net.minecraft.client.render.entity.model.PiglinEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-
-
-
-
-
-
-
-
-
-
-
 public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity, EntityModel<RisenPiglinEntity>> {
 
     private static final Identifier TEXTURE =
@@ -40,9 +29,6 @@ public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity
         this.maleModel = (PiglinEntityModel<RisenPiglinEntity>) this.model;
         this.femaleModel = new RisenFemalePiglinModel<>(context.getPart(ModModelLayers.RISEN_PIGLIN_FEMALE));
         this.addFeature(new RisenPiglinClothingFeatureRenderer(this));
-
-
-
         this.addFeature(new FarmerHatFeatureRenderer<>(this, new FarmerHatModel<>(context.getPart(ModModelLayers.FARMER_HAT))));
         this.addFeature(new FishermanHatFeatureRenderer<>(this, new FishermanHatModel<>(context.getPart(ModModelLayers.FISHERMAN_HAT))));
     }

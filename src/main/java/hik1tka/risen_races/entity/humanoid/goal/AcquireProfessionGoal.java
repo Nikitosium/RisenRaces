@@ -11,16 +11,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-
-
-
-
-
-
-
-
-
-
 public class AcquireProfessionGoal extends Goal {
 
     private static final int RESCAN_COOLDOWN_TICKS = 200;

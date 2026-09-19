@@ -13,20 +13,6 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHumanDrownedEntity, DrownedEntityModel<ZombifiedHumanDrownedEntity>> {
 
     private static final Identifier TEXTURE =
@@ -38,10 +24,6 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
 
     public ZombifiedHumanDrownedRenderer(EntityRendererFactory.Context context) {
         super(context, createModel(context.getPart(EntityModelLayers.DROWNED)), 0.5F);
-
-
-
-
         this.outerLayer = new DrownedOverlayFeatureRenderer<>(this, context.getModelLoader());
         this.addFeature(this.outerLayer);
     }

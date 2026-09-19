@@ -239,9 +239,6 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         return this.getRace().name().toLowerCase(java.util.Locale.ROOT);
     }
 
-
-
-
     /** Перевіряє поточну умову. */
     @Override
     public boolean isInLove() {

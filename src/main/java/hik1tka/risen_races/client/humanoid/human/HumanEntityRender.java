@@ -31,14 +31,6 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
         this.addFeature(new FishermanHatFeatureRenderer<>(this, fishermanHat));
     }
 
-
-
-
-
-
-
-
-
     private static PlayerEntityModel<HumanEntity> createModel(ModelPart root, boolean slim) {
         return new PlayerEntityModel<>(root, slim) {
             /** Оновлює значення властивості. */
@@ -49,12 +41,6 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
             }
         };
     }
-
-
-
-
-
-
 
     /** Рендерить сутність. */
     @Override

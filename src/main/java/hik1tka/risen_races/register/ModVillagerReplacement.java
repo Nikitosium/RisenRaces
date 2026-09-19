@@ -7,19 +7,6 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemGroups;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class ModVillagerReplacement {
 
     /** Реєструє компонент модуля. */

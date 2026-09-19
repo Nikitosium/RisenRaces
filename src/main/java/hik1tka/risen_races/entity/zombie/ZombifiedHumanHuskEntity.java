@@ -17,12 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
-
-
-
-
-
-
 public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
 
     public static final EntityType<ZombifiedHumanHuskEntity> ZOMBIFIED_HUMAN_HUSK = Registry.register(
@@ -50,22 +44,11 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
         super(entityType, world);
     }
 
-
-
-
-
-
     /** Перевіряє поточну умову. */
     @Override
     protected boolean isAffectedByDaylight() {
         return false;
     }
-
-
-
-
-
-
 
     /** Виконує спробу дії. */
     @Override
