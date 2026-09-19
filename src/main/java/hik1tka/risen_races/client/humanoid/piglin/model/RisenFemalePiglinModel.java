@@ -7,22 +7,22 @@ import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-/**
- * Java-модель, вручну перенесена з female_piglin.json (Bedrock-формат,
- * format_version 1.12.0). Bedrock і Java використовують РІЗНІ системи
- * координат (Bedrock: Y вгору, пивоти абсолютні; Java: Y вниз, пивоти
- * відносні до батька) - тому це не механічне копіювання чисел, а
- * перерахований еквівалент. Якщо десь виглядатиме "трохи не так" -
- * найімовірніше, помилка саме в конвертації одного вузла, кажи, поправлю.
- *
- * Свідомі відхилення від файлу:
- *  - "snout" (морда/плита рота) з голови ВЗАГАЛІ не намальована - ти назвав
- *    це "іклами" і хотів прибрати; оскільки ця модель призначена ТІЛЬКИ для
- *    жінок (не перемикається рантайм-скейлом, як у Ринара), простіше не
- *    будувати цей куб узагалі, ніж будувати і ховати.
- *  - "hat", "rightItem", "leftItem" - порожні кістки-кріплення в JSON без
- *    кубів, для базового рендеру не потрібні, пропущено.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SinglePartEntityModel<T> implements net.minecraft.client.render.entity.model.ModelWithHead {
 
     private final ModelPart root;
@@ -47,6 +47,7 @@ public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SingleP
         this.leftLeg = body.getChild("leftleg");
     }
 
+    /** Повертає поточне значення властивості. */
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
@@ -56,9 +57,9 @@ public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SingleP
                         .uv(16, 32).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new Dilation(0.25F)),
                 ModelTransform.pivot(0.0F, 0.0F, 0.0F));
 
-        // Основа голови + п'ятачок (носик) - той самий плаский куб, що й у
-        // ванільного пігліна. Раніше я його помилково прибрав, сплутавши з
-        // "іклами" - це різні частини, п'ятачок лишається.
+
+
+
         ModelPartData head = body.addChild("head", ModelPartBuilder.create()
                         .uv(0, 0).cuboid(-5.0F, -8.0F, -4.0F, 10.0F, 8.0F, 8.0F, new Dilation(-0.02F))
                         .uv(31, 1).cuboid(-2.0F, -4.0F, -5.0F, 4.0F, 4.0F, 1.0F, new Dilation(-0.02F)),
@@ -72,7 +73,7 @@ public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SingleP
                         .uv(39, 6).cuboid(0.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F),
                 ModelTransform.of(-5.0F, -6.0F, 0.0F, 0.0F, 0.0F, 0.5236F));
 
-        // Руки - вже 3px (не 4px, як у ванілі) прямо в геометрії, згідно файлу.
+
         body.addChild("rightarm", ModelPartBuilder.create()
                         .uv(41, 16).cuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F)
                         .uv(40, 32).cuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.25F)),
@@ -96,6 +97,7 @@ public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SingleP
         return TexturedModelData.of(modelData, 64, 64);
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress,
                           float headYaw, float headPitch) {
@@ -108,16 +110,19 @@ public class RisenFemalePiglinModel<T extends RisenPiglinEntity> extends SingleP
         this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public ModelPart getHead() {
         return this.head;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public ModelPart getPart() {
         return this.root;
     }
 
+    /** Рендерить сутність. */
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay,
                        float red, float green, float blue, float alpha) {

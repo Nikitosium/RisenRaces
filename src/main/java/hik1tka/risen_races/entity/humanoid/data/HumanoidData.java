@@ -13,8 +13,12 @@ public class HumanoidData {
         this.level = level;
     }
 
+    /** Повертає поточне значення властивості. */
     public String getRaceId() { return raceId; }
+    /** Перевіряє поточну умову. */
     public boolean isFemale() { return isFemale; }
+    /** Повертає поточне значення властивості. */
     public String getProfession() { return profession; }
+    /** Повертає поточне значення властивості. */
     public int getLevel() { return level; }
 }

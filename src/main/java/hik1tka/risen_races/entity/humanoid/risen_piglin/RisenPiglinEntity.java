@@ -40,23 +40,24 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
                     .build()
     );
 
+    /** Створює потрібний обєкт або сутність. */
     public static net.minecraft.entity.attribute.DefaultAttributeContainer.Builder createRisenPiglinAttributes() {
         return HumanoidEntity.createHumanoidAttributes();
     }
 
     private static final float LOW_HEALTH_THRESHOLD = 5.0f;
-    // Радіус пошуку "сусідів по каравану" при формуванні паровозика.
+
     private static final double TRAIN_SEARCH_RADIUS = 16.0D;
 
-    // UUID гравця, який зняв прокляття з цього пігліна. null - ще не врятований.
-    // TODO: виставляється через setRescuer(...), який має викликати майбутній
-    // ефект/mixin конверсії дикого ванільного пігліна в RisenPiglinEntity.
+
+
+
     @Nullable
     private UUID rescuerUuid;
 
-    // UUID іншого RisenPiglin, який іде ПОПЕРЕДУ цього в ланцюжку каравану
-    // ("паровозиком", як лами). null означає "я головний у каравані - слідую
-    // напряму за гравцем" (rescuerUuid), а не за іншим пігліном.
+
+
+
     @Nullable
     private UUID trainLeaderUuid;
 
@@ -64,10 +65,12 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         super(entityType, world);
     }
 
+    /** Виконує дію компонента. */
     @Override
     protected void afterUsing(TradeOffer offer) {
     }
 
+    /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
@@ -76,57 +79,62 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
+    /** Налаштовує цілі поведінки. */
     @Override
     protected void initGoals() {
         super.initGoals();
-        // Пріоритет 0 - вищий за все (навіть за SeekNetherPortalGoal): поки хп
-        // критично мале, бій і біг до порталу фізично не можуть тривати -
-        // LowHealthFleeGoal забирає Control.MOVE собі.
+
+
+
         this.goalSelector.add(0, new LowHealthFleeGoal(this));
-        // Пріоритет 1: "тупо біжить" до порталу, щойно бачить - вищий за бій
-        // (2) і слідування (4), нижчий лише за критичну втечу (0).
+
+
         this.goalSelector.add(1, new SeekNetherPortalGoal(this));
-        // Пріоритет 4: фонове слідування за рятівником/лідером каравану -
-        // нижчий і за бій (2), і за "економіку" раси (3), щоб піглін не
-        // ігнорував напад чи професію заради простого прямування за кимось.
+
+
+
         this.goalSelector.add(4, new FollowRescuerGoal(this));
     }
 
-    /**
-     * Викликається (поки що вручну/ззовні - в майбутньому ефектом зняття
-     * прокляття) в момент, коли гравець "рятує" цього пігліна. Прив'язує
-     * рятівника й одразу намагається вписати пігліна в існуючий караван
-     * (паровозик) інших уже врятованих піглінів того самого гравця -
-     * див. assignTrainPosition().
-     */
+
+
+
+
+
+
+
+    /** Оновлює значення властивості. */
     public void setRescuer(PlayerEntity player) {
         this.rescuerUuid = player.getUuid();
         assignTrainPosition();
     }
 
+    /** Перевіряє поточну умову. */
     public boolean hasRescuer() {
         return this.rescuerUuid != null;
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     public UUID getRescuerUuid() {
         return this.rescuerUuid;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
-        float base = super.getSoundPitch(); // тут вже врахований дитячий пітч з HumanoidEntity
-        if (this.isBaby()) return base;      // дитячий і так вищий - гендер зверху не накладаємо
+        float base = super.getSoundPitch();
+        if (this.isBaby()) return base;
         return this.isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-    /**
-     * Хто йде "попереду" в караванному ланцюжку (паровозик, як у лам):
-     * якщо серед уже врятованих піглінів того самого гравця поблизу є хтось,
-     * за ким ще ніхто не йде ("хвіст" каравану) - чіпляємось за нього.
-     * Якщо поруч нікого (перший врятований, чи всі вже комусь лідери) -
-     * trainLeaderUuid лишається null, і піглін іде напряму за гравцем.
-     */
+
+
+
+
+
+
+
     private void assignTrainPosition() {
         if (!(this.getWorld() instanceof ServerWorld serverWorld) || rescuerUuid == null) {
             return;
@@ -142,8 +150,8 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
             return;
         }
 
-        // Хто вже комусь "лідер" (є хтось, хто вже за ним іде) - той не тягне
-        // за собою ще одного, ланцюжок росте лише в "хвіст".
+
+
         Set<UUID> alreadyFollowed = new HashSet<>();
         for (RisenPiglinEntity sibling : siblings) {
             if (sibling.trainLeaderUuid != null) {
@@ -167,13 +175,14 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         this.trainLeaderUuid = (tail != null) ? tail.getUuid() : null;
     }
 
-    /**
-     * Ціль, за якою зараз реально треба йти (FollowRescuerGoal). Якщо лідер
-     * попереду в ланцюжку помер/зник - "просуваємось" і тимчасово йдемо
-     * напряму за гравцем (спрощення - в ідеалі варто перечіплятись за
-     * НАСТУПНОГО в ланцюжку, а не одразу за гравця, але для цього потрібен
-     * зворотній зв'язок "хто йшов за зниклим", якого зараз немає).
-     */
+
+
+
+
+
+
+
+    /** Знаходить потрібний обєкт. */
     @Nullable
     public LivingEntity resolveFollowTarget() {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
@@ -197,23 +206,26 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         return null;
     }
 
+    /** Обробляє подію життєвого циклу. */
     @Override
     protected void onBabyCreated(HumanoidEntity baby) {
     }
 
+    /** Створює потрібний обєкт або сутність. */
     @Override
     public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 
-    /**
-     * Дитячий скейл підібраний ОКРЕМО під кожну стать - компенсує різницю
-     * в самих моделях (жіноча геометрія більша за чоловічу за задумом),
-     * яка на дорослих формах - нормальна різниця, а на дітях виглядає як
-     * "дівчинка завелика, хлопчик замалий". Дорослих не чіпаємо взагалі -
-     * там 1.0f завжди, різниця моделей лишається такою, як намальована.
-     * ПОЧАТКОВІ ЗНАЧЕННЯ - підбери в грі на око.
-     */
+
+
+
+
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public float getScaleFactor() {
         if (!this.isBaby()) {
             return 1.0f;
@@ -221,14 +233,16 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         return this.isFemale() ? 0.65f : 0.7f;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getHatYOffset() {
-        // Голова пігліна геометрично вища за людську - без цього спільна
-        // шапка-модель сидить трохи низько. 2px = 2/16. Підбери 2-3px
-        // (0.125F-0.1875F) на око в грі.
+
+
+
         return -0.125F;
     }
 
+    /** Обробляє отриману шкоду. */
     @Override
     public boolean damage(DamageSource source, float amount) {
         boolean hurt = super.damage(source, amount);
@@ -240,12 +254,12 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
 
     private void reactToDamage(LivingEntity attacker) {
         if (this.getHealth() < LOW_HEALTH_THRESHOLD) {
-            // критично мало хп - тікаємо від будь-кого, навіть якщо це рятівник
+
             this.setTarget(null);
             return;
         }
-        // Тепер довіряємо КОНКРЕТНО тому гравцю, що зняв прокляття (rescuerUuid),
-        // а не всім підряд - на відміну від старої заглушки-прапорця.
+
+
         if (this.hasRescuer() && attacker instanceof PlayerEntity player
                 && player.getUuid().equals(this.rescuerUuid)) {
             return;
@@ -253,6 +267,7 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         this.setTarget(attacker);
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public List<ProfessionDefinition> getAvailableProfessions() {
         return List.of(
@@ -266,25 +281,30 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         );
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public String getRaceId() {
         return this.getRace().name().toLowerCase(java.util.Locale.ROOT);
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean isInLove() {
         return false;
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setLoveTicks(int ticks) {
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canBreedWith(PassiveEntity other) {
         return this.canBreedWithGendered(other);
     }
 
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -296,6 +316,7 @@ public class RisenPiglinEntity extends HumanoidEntity implements IGenderedEntity
         }
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);

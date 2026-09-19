@@ -6,6 +6,7 @@ import net.minecraft.entity.mob.HuskEntity;
 
 public class ModHuskReplacement {
 
+    /** Реєструє компонент модуля. */
     public static void register() {
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {

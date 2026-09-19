@@ -4,7 +4,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.util.Identifier;
 
 public class ModModelLayers {
-    // Реєструємо шар для капелюха фермера
+
     public static final EntityModelLayer FARMER_HAT =
             new EntityModelLayer(new Identifier("risen_races", "farmer_hat"), "main");
 

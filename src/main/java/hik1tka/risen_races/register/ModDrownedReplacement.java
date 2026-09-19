@@ -9,6 +9,7 @@ import net.minecraft.item.Items;
 
 public class ModDrownedReplacement {
 
+    /** Реєструє компонент модуля. */
     public static void register() {
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {

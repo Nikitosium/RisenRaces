@@ -22,13 +22,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 public class RisenRacesClient implements ClientModInitializer {
 
+    /** Обробляє подію життєвого циклу. */
     @Override
     public void onInitializeClient() {
-        // Шари капелюхів (людина)
+
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FARMER_HAT, FarmerHatModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.FISHERMAN_HAT, FishermanHatModel::getTexturedModelData);
-        // Власна модель жіночого пігліна - обов'язково, RisenPiglinEntityRender
-        // їх запитує в конструкторі, інакше саме тут і буде "entityRenderer is null"
+
+
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.RISEN_PIGLIN_FEMALE, RisenFemalePiglinModel::getTexturedModelData);
 
         EntityRendererRegistry.register(HumanEntity.HUMAN, HumanEntityRender::new);

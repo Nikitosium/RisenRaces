@@ -10,7 +10,7 @@ import hik1tka.risen_races.entity.humanoid.goal.PickUpFoodGoal;
 import hik1tka.risen_races.entity.humanoid.goal.RizenPiglinDefenseGoal;
 import hik1tka.risen_races.util.VillageCapacityHelper;
 import net.minecraft.entity.EntityType;
-//import net.minecraft.entity.LivingEntity;
+
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -19,7 +19,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.MerchantEntity;
-//import net.minecraft.entity.player.PlayerEntity;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
@@ -31,7 +31,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
-//import net.minecraft.util.math.random.Random;
+
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
 
@@ -39,16 +39,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-//import java.util.EnumSet;
 
-/**
- * Гуманоїдний ентіті, що заміняє ванільного жителя.
- * Спільний "мозок" (торгівля, розмноження, базова небезпека) тут,
- * а все, що відрізняється по расі, береться з HumanoidRace.
- */
+
+
+
+
+
+
 public abstract class HumanoidEntity extends MerchantEntity {
 
-    // --- DataTracker: раса та стать, синхронізуються клієнт/сервер і зберігаються в NBT вручну ---
+
     private static final TrackedData<Integer> RACE =
             DataTracker.registerData(HumanoidEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> IS_FEMALE =
@@ -56,102 +56,106 @@ public abstract class HumanoidEntity extends MerchantEntity {
     private static final TrackedData<String> PROFESSION =
             DataTracker.registerData(HumanoidEntity.class, TrackedDataHandlerRegistry.STRING);
 
-    // --- Інвентар: як у ванільного жителя (8 слотів, SimpleInventory) ---
-    // VillagerEntity має цей інвентар сам по собі, але HumanoidEntity успадковується
-    // від MerchantEntity (лише торгівля, без інвентаря) - тому додаємо власний.
+
+
+
     public static final int INVENTORY_SIZE = 8;
     private final SimpleInventory inventory = new SimpleInventory(INVENTORY_SIZE);
 
-    /**
-     * points  - скільки "балів" дає одиниця предмета в BREEDING_FOOD_VALUES
-     * babies  - скільки дитинчат народжується, якщо саме ЦЯ їжа була
-     *           використана (списана) під час розмноження
-     */
+
+
+
+
+
     private record FoodInfo(int points, int babies) {}
 
-    // --- Харчі, які рахуються для умови розмноження ---
-    // TODO: "золота їжа" в завданні була неоднозначна - тут це GOLDEN_CARROT
-    // і звичайне GOLDEN_APPLE (не зачароване). Якщо малось на увазі щось
-    // інше (напр. Glistering Melon Slice - вона не їстівна у ваніллі і не
-    // підходить), просто заміни/додай запис у мапі нижче.
+
+
+
+
+
     private static final Map<Item, FoodInfo> BREEDING_FOOD_VALUES = Map.ofEntries(
             Map.entry(Items.BREAD, new FoodInfo(4, 1)),
             Map.entry(Items.POTATO, new FoodInfo(1, 1)),
             Map.entry(Items.CARROT, new FoodInfo(1, 1)),
             Map.entry(Items.BEETROOT, new FoodInfo(1, 1)),
-            Map.entry(Items.CHICKEN, new FoodInfo(6, 1)),           // курка сира
-            Map.entry(Items.COOKED_CHICKEN, new FoodInfo(12, 1)),   // курка смажена
-            Map.entry(Items.BEEF, new FoodInfo(12, 1)),             // яловичина сира
-            Map.entry(Items.COOKED_BEEF, new FoodInfo(24, 2)),      // яловичина смажена -> 2 дитинки
-            Map.entry(Items.PORKCHOP, new FoodInfo(12, 1)),         // свинина сира
-            Map.entry(Items.COOKED_PORKCHOP, new FoodInfo(24, 2)),  // свинина смажена -> 2 дитинки
-            Map.entry(Items.PUMPKIN_PIE, new FoodInfo(12, 1)),      // гарбузовий пиріг
-            Map.entry(Items.GOLDEN_CARROT, new FoodInfo(32, 3)),    // золота їжа -> 3 дитинки
-            Map.entry(Items.GOLDEN_APPLE, new FoodInfo(32, 3)),     // золота їжа -> 3 дитинки
-            Map.entry(Items.ENCHANTED_GOLDEN_APPLE, new FoodInfo(48, 4)) // яблуко нотча -> 4 дитинки
+            Map.entry(Items.CHICKEN, new FoodInfo(6, 1)),
+            Map.entry(Items.COOKED_CHICKEN, new FoodInfo(12, 1)),
+            Map.entry(Items.BEEF, new FoodInfo(12, 1)),
+            Map.entry(Items.COOKED_BEEF, new FoodInfo(24, 2)),
+            Map.entry(Items.PORKCHOP, new FoodInfo(12, 1)),
+            Map.entry(Items.COOKED_PORKCHOP, new FoodInfo(24, 2)),
+            Map.entry(Items.PUMPKIN_PIE, new FoodInfo(12, 1)),
+            Map.entry(Items.GOLDEN_CARROT, new FoodInfo(32, 3)),
+            Map.entry(Items.GOLDEN_APPLE, new FoodInfo(32, 3)),
+            Map.entry(Items.ENCHANTED_GOLDEN_APPLE, new FoodInfo(48, 4))
     );
 
-    /**
-     * Чи цей предмет взагалі рахується як "їжа для розмноження"
-     * (використовується PickUpFoodGoal, щоб фільтрувати ItemEntity на підбір).
-     */
+
+
+
+
+    /** Перевіряє поточну умову. */
     public static boolean isBreedingFood(Item item) {
         return BREEDING_FOOD_VALUES.containsKey(item);
     }
 
-    // Скільки сумарних балів їжі потрібно в інвентарі, щоб пара могла розмножитись.
-    // Публічне, бо потрібне й PickUpFoodGoal (інший пакет) як орієнтир "досить назбирали".
+
+
     public static final int BREEDING_FOOD_REQUIREMENT = 12;
 
-    // Позиція робочого місця (POI) - лише на сервері, клієнту не потрібна.
+
     @Nullable
     private BlockPos jobSite;
 
-    // кулдаун розмноження, у тіках (щоб не плодились щосекунди)
+
     private int breedingCooldown = 0;
 
-    // --- Черга "недонароджених" дітей ---
-    // Скільки дитинчат цей ентіті ще "винен" світові - залишок від
-    // breedWith(), коли їжа дала більше дітей (напр. яблуко Нотча - 4),
-    // ніж було вільних місць у селі на момент пологів. Не губимо цю
-    // різницю, а видаємо по одній дитині за раз пізніше - див.
-    // queuePendingBabies()/tick().
+
+
+
+
+
+
     private int pendingBabies = 0;
-    // Абсолютний world.getTime(), коли варто зробити НАСТУПНУ спробу
-    // видати 1 дитину з черги. -1 - черга порожня, перевіряти нічого.
+
+
     private long nextPendingBirthTick = -1L;
 
     public HumanoidEntity(EntityType<? extends MerchantEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    // ---------- Реєстрація атрибутів (як у жителя) ----------
+
+    /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createHumanoidAttributes() {
         return MerchantEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.27D)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0D)
-                // MerchantEntity (жителі) цього не має - вони не б'ються.
-                // Потрібен для MeleeAttackGoal/tryAttack (FIGHT-раси), інакше
-                // LivingEntity.getAttributeValue(GENERIC_ATTACK_DAMAGE) кидає
-                // IllegalArgumentException ("Can't find attribute") і валить сервер.
+
+
+
+
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0D);
     }
 
+    /** Реєструє синхронізовані дані сутності. */
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(RACE, HumanoidRace.HUMAN.ordinal());
-        // Дефолт false: конкретна раса сама вирішує, як рандомізувати стать
-        // (див., напр., HumanEntity.initDataTracker()).
+
+
         this.dataTracker.startTracking(IS_FEMALE, false);
         this.dataTracker.startTracking(PROFESSION, "none");
     }
-    // ---------- HumanoidData (Паспорт для Рендеру) ----------
 
-    /**
-     * Формує об'єкт даних для рендерерів одягу, текстур та шапок.
-     */
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public HumanoidData getHumanoidData() {
         return new HumanoidData(
                 this.getRace().name().toLowerCase(java.util.Locale.ROOT),
@@ -161,64 +165,73 @@ public abstract class HumanoidEntity extends MerchantEntity {
         );
     }
 
-    /**
-     * Повертає id поточної професії, "none" якщо безробітний.
-     */
+
+
+
+    /** Повертає поточне значення властивості. */
     public String getProfession() {
         return this.dataTracker.get(PROFESSION);
     }
 
+    /** Оновлює значення властивості. */
     public void setProfession(String professionId) {
         this.dataTracker.set(PROFESSION, professionId);
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     public BlockPos getJobSite() {
         return jobSite;
     }
 
+    /** Оновлює значення властивості. */
     public void setJobSite(BlockPos pos) {
         this.jobSite = pos;
     }
 
+    /** Виконує дію компонента. */
     public void clearJobSite() {
         this.jobSite = null;
         setProfession("none");
     }
 
-    /**
-     * Список професій, доступних цій расі, і POI-типів, які їх дають.
-     * За замовчуванням пусто - раса, яка хоче професії (напр. HumanEntity),
-     * перевизначає це.
-     */
+
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public List<ProfessionDefinition> getAvailableProfessions() {
         return List.of();
     }
 
-    // ---------- Інвентар ----------
 
+
+    /** Повертає поточне значення властивості. */
     public SimpleInventory getInventory() {
         return this.inventory;
     }
 
-    // ---------- Підбір їжі з землі ----------
-    // Разом з PickUpFoodGoal (goal-пакет): той лише підводить ентіті впритул
-    // до предмета, а сам факт "взяти в руки" робить вбудований цикл
-    // MobEntity.tick() -> loot(ItemEntity), який спрацьовує, коли
-    // canPickUpLoot() == true і предмет опиняється в радіусі ~1 блоку
-    // (саме туди й веде PickUpFoodGoal). sendPickup(...) всередині loot()
-    // сам відтворює ванільний звук підбору предмета - додатково нічого
-    // програвати не треба.
 
+
+
+
+
+
+
+
+
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canPickUpLoot() {
         return true;
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canGather(ItemStack stack) {
-        // Підбираємо лише те, що рахується як їжа для розмноження, і лише
-        // поки в інвентарі справді є вільне місце під цей стак.
+
+
         if (!isBreedingFood(stack.getItem())) {
             return false;
         }
@@ -234,13 +247,14 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return false;
     }
 
+    /** Виконує дію компонента. */
     @Override
     protected void loot(net.minecraft.entity.ItemEntity item) {
-        // Перевизначаємо повністю замість super.loot(...): ванільна
-        // реалізація кладе предмет в екіпіровку (зброя/броня), а нам треба
-        // саме в inventory. TODO: якщо в твоєму мапінгу Yarn сигнатура
-        // loot()/canGather() відрізняється - звір з декомпільованим
-        // MobEntity в IDE і поправ назви методів тут.
+
+
+
+
+
         ItemStack stack = item.getStack();
         if (!canGather(stack)) {
             return;
@@ -272,9 +286,10 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-    /**
-     * Сумарна "їжева цінність" інвентаря за BREEDING_FOOD_VALUES.
-     */
+
+
+
+    /** Повертає поточне значення властивості. */
     public int getFoodValueInInventory() {
         int total = 0;
         for (int i = 0; i < inventory.size(); i++) {
@@ -287,21 +302,23 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return total;
     }
 
-    /**
-     * Чи достатньо їжі в інвентарі, щоб цей ентіті міг брати участь у
-     * розмноженні (BREEDING_FOOD_REQUIREMENT балів).
-     */
+
+
+
+
+    /** Перевіряє поточну умову. */
     public boolean hasEnoughFoodToBreed() {
         return getFoodValueInInventory() >= BREEDING_FOOD_REQUIREMENT;
     }
 
-    /**
-     * Сумарна КІЛЬКІСТЬ штук їстівних предметів в інвентарі - на відміну від
-     * getFoodValueInInventory(), тут не враховуються "бали" BREEDING_FOOD_VALUES,
-     * лише сира кількість. Використовується для ShareFoodGoal: золоте яблуко
-     * Нотча (1 шт., багато балів) не ділиться, а 2 звичайних яблука (мало
-     * балів кожне) - діляться, бо порівняння йде по штуках.
-     */
+
+
+
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public int getTotalFoodItemCount() {
         int total = 0;
         for (int i = 0; i < inventory.size(); i++) {
@@ -313,12 +330,13 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return total;
     }
 
-    /**
-     * Приймає "подарунок" їжі від іншого гуманоїда - той самий механізм
-     * вставки, що й loot(), але без ItemEntity/звуку підбору (тут з рук в
-     * руки, а не з землі). Повертає залишок, якщо інвентар отримувача
-     * виявився повний.
-     */
+
+
+
+
+
+
+    /** Виконує дію компонента. */
     public ItemStack receiveFoodGift(ItemStack stack) {
         for (int i = 0; i < inventory.size() && !stack.isEmpty(); i++) {
             ItemStack slot = inventory.getStack(i);
@@ -336,11 +354,12 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return stack;
     }
 
-    /**
-     * Ділиться РІВНО 1 штукою їжі з іншим гуманоїдом - лише якщо після
-     * передачі в себе лишиться хоча б 1 (тобто зараз >= 2 такого предмета).
-     * Порівняння йде по КІЛЬКОСТІ штук, не по балах - див. getTotalFoodItemCount().
-     */
+
+
+
+
+
+    /** Виконує дію компонента. */
     public boolean shareOneFoodItemWith(HumanoidEntity other) {
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStack(i);
@@ -357,12 +376,12 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return false;
     }
 
-    /**
-     * Списує з інвентаря їжу на суму BREEDING_FOOD_REQUIREMENT балів і
-     * повертає, скільки дитинчат "заслуговує" на цю комбінацію їжі -
-     * максимум серед babies() усіх фактично списаних предметів (мінімум 1).
-     * Викликається під час breedWith() для обох батьків.
-     */
+
+
+
+
+
+
     private int consumeBreedingFoodAndGetBabies() {
         int remaining = BREEDING_FOOD_REQUIREMENT;
         int bestBabies = 1;
@@ -381,38 +400,45 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return bestBabies;
     }
 
-    /**
-     * Вертикальний зсув спільних шапок-моделей (Farmer/FishermanHat) для цієї
-     * раси, у блоках (1 піксель = 1/16 = 0.0625F). Від'ємне значення - вгору.
-     * За замовчуванням 0 - раса, чия голова геометрично відрізняється від
-     * людської (напр. RisenPiglinEntity), перевизначає це.
-     */
+
+
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public float getHatYOffset() {
         return 0.0F;
     }
 
-    // ---------- Race / isFemale гетери-сетери ----------
 
+
+    /** Повертає поточне значення властивості. */
     public HumanoidRace getRace() {
         return HumanoidRace.values()[this.dataTracker.get(RACE)];
     }
 
+    /** Оновлює значення властивості. */
     public void setRace(HumanoidRace race) {
         this.dataTracker.set(RACE, race.ordinal());
     }
 
+    /** Перевіряє поточну умову. */
     public boolean isFemale() {
         return this.dataTracker.get(IS_FEMALE);
     }
 
+    /** Оновлює значення властивості. */
     public void setFemale(boolean female) {
         this.dataTracker.set(IS_FEMALE, female);
     }
 
+    /** Перевіряє поточну умову. */
     public boolean isBreedingReady() {
         return breedingCooldown <= 0;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
         if (this.isBaby()) {
@@ -421,18 +447,20 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return super.getSoundPitch();
     }
 
+    /** Виконує дію компонента. */
     public void resetBreedingCooldown() {
-        // приблизно 5 хв (20 тіків/сек) - підбери під свій баланс
+
         this.breedingCooldown = 6000;
     }
 
-    /**
-     * Основна перевірка сумісності для розмноження:
-     * - однакова раса (RaceId збігається)
-     * - протилежна стать (isFemale відрізняється)
-     * - обидва вже можуть розмножуватись (кулдаун пройшов)
-     * - в обох в інвентарі достатньо їжі (BREEDING_FOOD_REQUIREMENT балів)
-     */
+
+
+
+
+
+
+
+    /** Перевіряє поточну умову. */
     public boolean canBreedWith(HumanoidEntity other) {
         if (other == this) return false;
         if (this.getRace() != other.getRace()) return false;
@@ -441,28 +469,29 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return this.hasEnoughFoodToBreed() && other.hasEnoughFoodToBreed();
     }
 
-    /**
-     * Викликається, коли пара знайдена і умови зустрілись (FindMateGoal).
-     * Списує їжу в обох, і залежно від того, яка саме їжа пішла в хід,
-     * народжує 1-4 дитинчат (FoodInfo.babies() в BREEDING_FOOD_VALUES).
-     */
+
+
+
+
+
+    /** Виконує дію компонента. */
     public void breedWith(HumanoidEntity partner) {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) return;
         if (!canBreedWith(partner)) return;
 
-        // Списуємо їжу ДО спавну дітей - і водночас дізнаємось, скільки
-        // дитинчат "заслужила" ця їжа (беремо кращий результат з двох батьків).
+
+
         int babiesFromThis = this.consumeBreedingFoodAndGetBabies();
         int babiesFromPartner = partner.consumeBreedingFoodAndGetBabies();
         int requestedBabies = Math.max(babiesFromThis, babiesFromPartner);
 
-        // Обрізаємо до фактично вільних місць ПРЯМО ЗАРАЗ, а не покладаємось
-        // лише на гейт FindMateGoal.canStart() -> hasRoomToBreed(): той
-        // перевіряв "місце є" ще на старті пошуку пари, до того, як вони
-        // йшли назустріч одне одному - за цей час хтось інший міг встигнути
-        // розмножитись першим. Їжа вже списана повністю на requestedBabies -
-        // яблуко Нотча коштує стільки ж, навіть якщо реально народиться
-        // менше дітей, ніж воно "обіцяло" (переповнене село не повертає їжу).
+
+
+
+
+
+
+
         int babyCount = VillageCapacityHelper.capBabyCount(this, requestedBabies);
 
         for (int i = 0; i < babyCount; i++) {
@@ -474,53 +503,53 @@ public abstract class HumanoidEntity extends MerchantEntity {
 
         int shortfall = requestedBabies - babyCount;
         if (shortfall > 0) {
-            // Не влізли одразу - не пропадають, а стають чергою на "this":
-            // видаються по одній дитині за раз пізніше, коли з'явиться
-            // місце (tick() -> pendingBabies).
+
+
+
             queuePendingBabies(shortfall);
-            // Миттєве сповіщення з ТОЧНИМ числом дітей, які не влізли цього
-            // разу (а не загальним "рівно заповнено" з announceIfFull) -
-            // саме це число гравець і очікує побачити, коли годує пару
-            // яблуком Нотча в майже заповненому селі.
+
+
+
+
             VillageCapacityHelper.announceQueuedBirths(this, shortfall);
         } else {
-            // Влізли всі, але саме ці пологи могли заповнити село "під
-            // зав'язку" - про це теж варто дізнатись одразу, а не чекати
-            // 12:00 наступного дня (VillageCapacityHelper.hasRoomToBreed()).
+
+
+
             VillageCapacityHelper.announceIfFull(this);
         }
     }
 
-    /**
-     * Власне спавн ОДНІЄЇ дитини - винесено окремо від breedWith(), бо той
-     * самий код потрібен і для видачі дітей з черги (pendingBabies) в
-     * tick(), не лише в момент самого "обряду".
-     */
+
+
+
+
+
     private void spawnOneBaby(ServerWorld serverWorld) {
         HumanoidEntity baby = (HumanoidEntity) getType().create(serverWorld);
         if (baby == null) return;
 
         baby.setRace(this.getRace());
         baby.setFemale(this.random.nextBoolean());
-        // Робимо ентіті дитиною: без цього isBaby() == false і getScaleFactor()
-        // (в HumanEntity) ніколи не застосовує зменшений масштаб.
+
+
         baby.setBreedingAge(-24000);
-        // Невеликий розкид позиції, щоб кілька дитинчат не спавнились
-        // рівно в одній точці одне на одному.
+
+
         double offsetX = (this.random.nextDouble() - 0.5D) * 1.5D;
         double offsetZ = (this.random.nextDouble() - 0.5D) * 1.5D;
         baby.refreshPositionAndAngles(this.getX() + offsetX, this.getY(), this.getZ() + offsetZ, 0.0F, 0.0F);
-        // Даємо расі шанс довизначити щось специфічне для щойно народженої дитини
-        // (наприклад, скін по статі - див. HumanEntity.onBabyCreated).
+
+
         onBabyCreated(baby);
         serverWorld.spawnEntityAndPassengers(baby);
     }
 
-    /**
-     * Додає дітей у чергу "боргу" - вони не пропадають, а видаються по
-     * одній штуці за раз пізніше (tick()), в рандомний момент. Якщо черга
-     * щойно була порожня - одразу плануємо першу спробу.
-     */
+
+
+
+
+
     private void queuePendingBabies(int count) {
         boolean wasEmpty = this.pendingBabies <= 0;
         this.pendingBabies += count;
@@ -529,46 +558,47 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-    /**
-     * Коли робити наступну спробу видати 1 дитину з черги.
-     *
-     * successfulLastAttempt = true (попередня спроба вдалась, або це
-     * взагалі перший запис у чергу) - чекаємо ПРИБЛИЗНО ігровий день,
-     * але в РАНДОМНИЙ момент (18000-30000 тіків розкиду) - навмисно не
-     * рівно "щодня о певній годині" і не прив'язано до жодного розкладу
-     * роботи/сну, інакше десяток "боржників" видавали б дітей одночасно
-     * (саме те, чого просили уникнути).
-     *
-     * successfulLastAttempt = false (місця й досі нема) - повторюємо
-     * набагато швидше (600-1800 тіків, ~30-90 сек), а не чекаємо цілу
-     * добу: якщо гравець щойно розширив село, результат має бути видно
-     * скоро, а не через день.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private void scheduleNextPendingBirthAttempt(boolean successfulLastAttempt) {
         long now = this.getWorld().getTime();
         if (successfulLastAttempt) {
-            // TODO: підбери інтервал під свій баланс - зараз ~0.9-1.5 ігрового дня.
+
             this.nextPendingBirthTick = now + 18000L + this.random.nextInt(12000);
         } else {
             this.nextPendingBirthTick = now + 600L + this.random.nextInt(1200);
         }
     }
 
-    /**
-     * Хук, що викликається одразу після створення й ініціалізації дитини
-     * в breedWith(), до її заспавнення у світі. За замовчуванням нічого
-     * не робить. Раси, яким треба щось довизначити для дитини (напр. скін,
-     * що не входить у HumanoidData/RACE/IS_FEMALE), перевизначають цей метод.
-     */
+
+
+
+
+
+
+    /** Обробляє подію життєвого циклу. */
     protected void onBabyCreated(HumanoidEntity baby) {
     }
 
-    // ---------- Goals ----------
 
-    /**
-     * Перевіряються щотика через ConditionalGoal (а не один раз при
-     * побудові goalSelector) - див. коментар в initGoals().
-     */
+
+
+
+
+
     private boolean isFleeRace() {
         return switch (getRace().getDangerBehavior()) {
             case FLEE -> true;
@@ -580,85 +610,90 @@ public abstract class HumanoidEntity extends MerchantEntity {
         return !isFleeRace();
     }
 
+    /** Налаштовує цілі поведінки. */
     @Override
     protected void initGoals() {
         super.initGoals();
         GoalSelector goals = this.goalSelector;
 
-        // Розмноження - спільне для всіх рас. Пріоритет 3 (не 2!) - навмисно
-        // нижчий за MeleeAttackGoal (2), інакше ці "економічні" гоули (всі
-        // Control.MOVE, і всі здатні лишатись активними довго) назавжди
-        // забирають MOVE у бойового гоула, і атака фізично не відбувається.
+
+
+
+
         goals.add(3, new FindMateGoal(this));
-        // Той самий пріоритет, що й FindMateGoal: реально конкурують за
-        // MOVE лише тоді, коли обидва можуть стартувати, а можуть вони
-        // взаємовиключно - FindMateGoal шукає партнера через canBreedWith()
-        // (потребує hasEnoughFoodToBreed()), PickUpFoodGoal сам вимикається,
-        // щойно їжі досить (див. його canStart()).
+
+
+
+
+
         goals.add(3, new PickUpFoodGoal(this));
         goals.add(3, new AcquireProfessionGoal(this));
-        // Пріоритет 4 - нижче за власне виживання/розмноження/роботу (усі на
-        // 3): спершу нагодуй/влаштуй себе, лише потім думай про сусіда.
+
+
         goals.add(4, new hik1tka.risen_races.entity.humanoid.goal.ShareFoodGoal(this));
-        goals.add(6, new WanderAroundFarGoal(this, 0.6D)); // Блукання по світу
-        goals.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F)); // Дивитися на гравця
+        goals.add(6, new WanderAroundFarGoal(this, 0.6D));
+        goals.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         goals.add(8, new LookAroundGoal(this));
 
-        // ВАЖЛИВО: initGoals() викликається з конструктора MobEntity, а
-        // setRace(...) виставляється пізніше (в initialize() при спавні,
-        // або в readCustomDataFromNbt() при завантаженні). Тому вирішувати
-        // flee-vs-fight один раз тут через switch не можна - на цей момент
-        // getRace() ще повертає дефолт (HUMAN), і поведінка "заморожується"
-        // на все життя ентіті. Замість цього реєструємо ОБИДВІ гілки
-        // завжди, а яка з них активна - ConditionalGoal перевіряє щотика
-        // через актуальний getRace().getDangerBehavior().
+
+
+
+
+
+
+
+
 
         goals.add(1, new ConditionalGoal(
                 new PanicUntilSafeGoal(this, 1.3D, 5),
                 this::isFleeRace));
-        // Ванільний FleeEntityGoal + список небезпечних мобів.
-        // TODO: заміни HostileEntity.class на власний предикат/список,
-        // якщо треба тікати не від усіх ворожих мобів, а від конкретного списку.
+
+
+
         goals.add(1, new ConditionalGoal(
                 new FleeEntityGoal<>(this, HostileEntity.class, 8.0F, 1.0D, 1.2D),
                 this::isFleeRace));
 
-        // Пріоритет 1: лише вибір/виставлення цілі (Control.TARGET).
+
         goals.add(1, new ConditionalGoal(
                 new RizenPiglinDefenseGoal(this),
                 this::isFightRace));
-        // Пріоритет 2: фактична атака (Control.MOVE/LOOK). Свідомо ВИЩИЙ
-        // пріоритет (менше число), ніж у "економічних" гоулів нижче
-        // (FindMateGoal/PickUpFoodGoal/AcquireProfessionGoal, пріоритет 3) -
-        // інакше, поки один з них активний (а FindMateGoal чи
-        // AcquireProfessionGoal можуть бути активні десятки секунд поспіль),
-        // MeleeAttackGoal фізично ніколи не отримує Control.MOVE: ціль
-        // виставляється (RizenPiglinDefenseGoal), а підійти й вдарити нема чим.
-        // Водночас 2 > 1 - LowHealthFleeGoal (RisenPiglinEntity, пріоритет 1,
-        // теж Control.MOVE) як і раніше гарантовано переважає атаку при
-        // критичному хп, незалежно від того, який з них "зараз запущений".
+
+
+
+
+
+
+
+
+
+
         goals.add(2, new ConditionalGoal(
                 new MeleeAttackGoal(this, 1.2D, false),
                 this::isFightRace));
     }
 
-    // ---------- Звуки по расі ----------
+
+    /** Повертає поточне значення властивості. */
     @Override
     protected SoundEvent getAmbientSound() {
         return getRace().getAmbientSound();
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     protected SoundEvent getHurtSound(net.minecraft.entity.damage.DamageSource source) {
         return getRace().getHurtSound();
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     protected SoundEvent getDeathSound() {
         return getRace().getDeathSound();
     }
 
-    // ---------- NBT: race / isFemale ----------
+
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -684,6 +719,7 @@ public abstract class HumanoidEntity extends MerchantEntity {
         nbt.put("HumanoidInventory", inventoryNbt);
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
@@ -715,6 +751,7 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         super.tick();
@@ -723,18 +760,18 @@ public abstract class HumanoidEntity extends MerchantEntity {
                 breedingCooldown--;
             }
 
-            // Черга "недонароджених" дітей (pendingBabies) - перевіряємо
-            // лише коли настав ЗАПЛАНОВАНИЙ момент (nextPendingBirthTick),
-            // а не щотика: тут не потрібна висока частота, а рандомний
-            // розкид часу - саме ціль цього механізму (див.
-            // scheduleNextPendingBirthAttempt()).
+
+
+
+
+
             if (pendingBabies > 0 && getWorld() instanceof ServerWorld pendingBirthWorld
                     && getWorld().getTime() >= nextPendingBirthTick) {
                 if (VillageCapacityHelper.getAvailableRoom(this) > 0) {
                     spawnOneBaby(pendingBirthWorld);
                     pendingBabies--;
-                    // Ця конкретна дитина теж могла заповнити село "під
-                    // зав'язку" - той самий миттєвий тригер, що й у breedWith().
+
+
                     VillageCapacityHelper.announceIfFull(this);
                     if (pendingBabies > 0) {
                         scheduleNextPendingBirthAttempt(true);
@@ -742,14 +779,14 @@ public abstract class HumanoidEntity extends MerchantEntity {
                         nextPendingBirthTick = -1L;
                     }
                 } else {
-                    // Місця й досі нема - пробуємо знов набагато швидше,
-                    // не чекаючи цілий день (див. коментар на методі).
+
+
                     scheduleNextPendingBirthAttempt(false);
                 }
             }
 
-            // Раз на секунду перевіряємо, що робоче місце ще існує (не зламане/
-            // не замінене іншим блоком) - інакше звільняємо професію.
+
+
             if (jobSite != null && this.age % 20 == 0
                     && getWorld() instanceof ServerWorld serverWorld) {
                 boolean stillValid = getAvailableProfessions().stream()
@@ -764,23 +801,25 @@ public abstract class HumanoidEntity extends MerchantEntity {
         }
     }
 
-    // ---------- Торгівля ----------
-    // MerchantEntity вже дає тобі getOffers()/setOffers() і меню безкоштовно.
-    // Тут просто підвантажуєш офери зі свого окремого дерева товарів по расі,
-    // наприклад TradeOfferRegistry.getOffersFor(getRace()).
-    /*@Override
-    public void setOffersFromServerData(TradeOfferList offers) {
-        super.setOffersFromServerData(offers);
-    }*/
 
+
+
+
+
+
+
+
+
+    /** Виконує дію компонента. */
     @Override
     protected void fillRecipes() {
-        // TODO: підʼєднай сюди свій TradeOfferRegistry, наприклад:
-        // this.setOffers(TradeOfferRegistry.getOffersFor(getRace(), this.random));
-        // Метод/точна назва (fillRecipes vs offers) залежить від мапінгів твоєї
-        // версії Yarn - звір з декомпільованим MerchantEntity/VillagerEntity в IDE.
+
+
+
+
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean isClient() {
         return this.getWorld().isClient();

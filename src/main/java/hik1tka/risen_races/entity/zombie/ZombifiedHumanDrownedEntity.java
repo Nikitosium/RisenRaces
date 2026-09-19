@@ -30,23 +30,23 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Утопець (Drowned) - варіант зомбіфікованої людини для океанів/річок/боліт/
- * пляжів та будь-якої іншої води (див. ZombieVariantHelper.resolveVariant()).
- *
- * Успадковує ВАНІЛЬНОГО DrownedEntity, а не нашого ZombifiedHumanEntity:
- * вся "утопцева" поведінка (плавання SwimNavigation, водяний MoveControl,
- * кидок тризуба по дистанції, спливання/занурення, вихід на берег) живе у
- * ПРИВАТНИХ внутрішніх класах DrownedEntity - їх не можна ні викликати, ні
- * перевикористати з іншого дерева класів, тому єдиний спосіб справді
- * "наслідувати утопця" - це успадкування самого класу. Раніше, через
- * extends ZombifiedHumanEntity, утопець умів лише "не задихатись під водою",
- * але топтався по дну як звичайний зомбі.
- *
- * Стать/професію/пам'ять/лікування дублюємо з ZombifiedHumanEntity за
- * контрактом IZombifiedHuman (див. коментар там) - NBT-ключі лишаються ті самі,
- * тож старі сейви з утопленими читаються без змін.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombifiedHuman {
 
     public static final EntityType<ZombifiedHumanDrownedEntity> ZOMBIFIED_HUMAN_DROWNED = Registry.register(
@@ -57,24 +57,24 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
                     .build()
     );
 
-    // --- Стать/професія: TrackedData реєструється ПРИВ'ЯЗАНО до конкретного
-    // класу ентіті, тому спільні з ZombifiedHumanEntity об'єкти тут не підійдуть
-    // (той зареєстрований проти свого класу, а ми не його нащадок). Ключі NBT
-    // лишаємо ті самі - сумісність сейвів. ---
+
+
+
+
     private static final TrackedData<Boolean> IS_FEMALE =
             DataTracker.registerData(ZombifiedHumanDrownedEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<String> PROFESSION =
             DataTracker.registerData(ZombifiedHumanDrownedEntity.class, TrackedDataHandlerRegistry.STRING);
 
-    // --- Дубльовано з ZombifiedHumanEntity навмисно: спільного предка нема
-    // (див. клас-коментар), тягнути сталі через статику чужого класу гірше,
-    // ніж кілька рядків дубля біля логіки, яка ними користується. ---
+
+
+
     private static final String[] PROFESSION_POOL = {
             "farmer", "butcher", "shepherd", "fisherman", "leatherworker", "cleric", "cartographer"
     };
     private static final float UNEMPLOYED_CHANCE = 0.4f;
 
-    /** Орієнтовний максимум getClampedLocalDifficulty() у ваніллі - формула шансу лікування нормалізує відносно нього. */
+
     private static final float ASSUMED_MAX_DIFFICULTY = 6.75f;
     private static final float CURE_CHANCE_AT_MIN_DIFFICULTY = 0.35f;
     private static final float CURE_CHANCE_AT_MAX_DIFFICULTY = 0.10f;
@@ -82,22 +82,24 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
     @Nullable
     private NbtCompound npcMemory;
 
-    /**
-     * ВАЖЛИВО: .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE, 0.0)
-     * тут навмисно - раніше цей рядок був відсутній, тож утопець успадковував
-     * ванільний шанс "покликати підкріплення" від ZombieEntity.createZombieAttributes()
-     * (DrownedEntity сам є ZombieEntity) - на Hard-складності поранений
-     * утопець міг спавнити поруч ще одного утопця. Саме це, найімовірніше, і
-     * виглядало як "дублювання".
-     * TODO: якщо константа EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE
-     * відсутня/перейменована у твоєму Yarn мапінгу - звір точну назву в
-     * декомпільованому ZombieEntity.createZombieAttributes().
-     */
+
+
+
+
+
+
+
+
+
+
+
+    /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createZombifiedHumanDrownedAttributes() {
         return ZombieEntity.createZombieAttributes()
                 .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0);
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public Identifier getLootTableId() {
         return EntityType.DROWNED.getLootTableId();
@@ -107,13 +109,14 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         super(entityType, world);
     }
 
-    /**
-     * Природний спавн (мобспавнер тощо) проходить через initialize() - тут
-     * генеруємо випадкові стать/професію. ВАЖЛИВО: super.initialize() - це
-     * саме DrownedEntity.initialize(), який роздає ванільне спорядження
-     * утопця (іноді тризуб/зілля в руку через initEquipment) - частина
-     * поведінки, яку наслідуємо, тому НЕ заміщуємо її повністю.
-     */
+
+
+
+
+
+
+
+    /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
@@ -121,6 +124,7 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
+    /** Реєструє синхронізовані дані сутності. */
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
@@ -128,39 +132,46 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         this.dataTracker.startTracking(PROFESSION, "none");
     }
 
-    // ---------- IZombifiedHuman: стать / професія / пам'ять ----------
 
+
+    /** Перевіряє поточну умову. */
     @Override
     public boolean isFemale() {
         return this.dataTracker.get(IS_FEMALE);
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setFemale(boolean female) {
         this.dataTracker.set(IS_FEMALE, female);
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public String getProfession() {
         return this.dataTracker.get(PROFESSION);
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setProfession(String profession) {
         this.dataTracker.set(PROFESSION, profession);
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     @Override
     public NbtCompound getNpcMemory() {
         return this.npcMemory;
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setNpcMemory(@Nullable NbtCompound memory) {
         this.npcMemory = memory;
     }
 
+    /** Генерує випадковий стан. */
     @Override
     public void rollRandomSpawnData() {
         setFemale(this.random.nextBoolean());
@@ -169,8 +180,9 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
                 : PROFESSION_POOL[this.random.nextInt(PROFESSION_POOL.length)]);
     }
 
-    // ---------- NBT (ті самі ключі, що в ZombifiedHumanEntity - сейви сумісні) ----------
 
+
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -181,6 +193,7 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         }
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
@@ -189,12 +202,13 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         if (nbt.contains("MD_NPC_Memory")) npcMemory = nbt.getCompound("MD_NPC_Memory");
     }
 
-    // ---------- Звук / пітч ----------
 
+
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
-        // Той самий момент, що в ZombifiedHumanEntity - DrownedEntity теж не
-        // піднімає пітч дитині сам.
+
+
         if (this.isBaby()) {
             return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F;
         }
@@ -202,18 +216,20 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         return isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-    // ---------- Лікування (той самий механізм, що в ZombifiedHumanEntity) ----------
 
+
+    /** Повертає поточне значення властивості. */
     public float getCureChance(ServerWorld world) {
         float localDifficulty = world.getLocalDifficulty(this.getBlockPos()).getClampedLocalDifficulty();
         float t = MathHelper.clamp(localDifficulty / ASSUMED_MAX_DIFFICULTY, 0.0f, 1.0f);
         return MathHelper.lerp(t, CURE_CHANCE_AT_MIN_DIFFICULTY, CURE_CHANCE_AT_MAX_DIFFICULTY);
     }
 
-    /**
-     * Викликати, коли PURIFICATION-ефект добігає кінця (той самий контракт,
-     * що в ZombifiedHumanEntity - підключення окремим гоулом/тиком ще попереду).
-     */
+
+
+
+
+    /** Виконує спробу дії. */
     public boolean tryCure(ServerWorld world) {
         if (world.getRandom().nextFloat() >= getCureChance(world)) {
             return false;
@@ -228,10 +244,11 @@ public class ZombifiedHumanDrownedEntity extends DrownedEntity implements IZombi
         return true;
     }
 
-    /**
-     * Кого відновлюємо при лікуванні - тут звичайну HumanEntity (з пам'яттю,
-     * якщо утопець народився з людини; інакше випадкова нова людина).
-     */
+
+
+
+
+    /** Створює потрібний обєкт або сутність. */
     @Nullable
     protected HumanoidEntity createRestoredHuman(ServerWorld world) {
         HumanEntity human = HumanEntity.HUMAN.create(world);

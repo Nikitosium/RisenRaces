@@ -13,20 +13,20 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-/**
- * Рендер утопця-людини. Модель - ВАНІЛЬНА DrownedEntityModel на шарі
- * EntityModelLayers.DROWNED, той самий клас, що використовує ванільний
- * DrownedEntityRenderer.
- *
- * Чому раніше "зовнішній шар" (нарости на тілі утопця) не відображався:
- * старий код мотав геометрію шару DROWNED у ZombieEntityModel, який знає
- * лише стандартний біпедний скелет - додаткові частини утопця (розширені
- * dilated копії кінцівок) ніхто ні рендерив, ні анімував. DrownedEntityModel
- * описує і анімує їх саме так, як у ванільного утопця, - тому беремо її,
- * а не ремонтуємо ZombieEntityModel вручну.
- *
- * У жіночого варіанта ширина рук дорівнює slim-моделі: 3/4 від wide-руки.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHumanDrownedEntity, DrownedEntityModel<ZombifiedHumanDrownedEntity>> {
 
     private static final Identifier TEXTURE =
@@ -38,16 +38,17 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
 
     public ZombifiedHumanDrownedRenderer(EntityRendererFactory.Context context) {
         super(context, createModel(context.getPart(EntityModelLayers.DROWNED)), 0.5F);
-        // Вбудований шар з мокрими наростами/подтьоками поверх базової моделі -
-        // саме він раніше не рендерився. Ідентична текстура/логіка ванільного
-        // DrownedEntityRenderer, свого не треба - текстуру для нього клас
-        // тримає в собі сам (textures/entity/zombie/drowned_outer_layer.png).
+
+
+
+
         this.outerLayer = new DrownedOverlayFeatureRenderer<>(this, context.getModelLoader());
         this.addFeature(this.outerLayer);
     }
 
     private static DrownedEntityModel<ZombifiedHumanDrownedEntity> createModel(ModelPart root) {
         return new DrownedEntityModel<>(root) {
+            /** Оновлює значення властивості. */
             @Override
             public void setAngles(ZombifiedHumanDrownedEntity entity, float limbAngle, float limbDistance,
                                   float animationProgress, float headYaw, float headPitch) {
@@ -57,6 +58,7 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
         };
     }
 
+    /** Рендерить сутність. */
     @Override
     public void render(ZombifiedHumanDrownedEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
@@ -66,6 +68,7 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    /** Застосовує масштаб моделі. */
     @Override
     protected void scale(ZombifiedHumanDrownedEntity entity, MatrixStack matrices, float amount) {
         if (entity.isBaby()) {
@@ -83,6 +86,7 @@ public class ZombifiedHumanDrownedRenderer extends MobEntityRenderer<ZombifiedHu
         leftArm.zScale = rightArm.zScale = 1.0F;
     }
 
+    /** Повертає текстуру сутності. */
     @Override
     public Identifier getTexture(ZombifiedHumanDrownedEntity entity) {
         return TEXTURE;

@@ -24,16 +24,16 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Зомбі, що зберігає стать/професію і (за наявності) пам'ять про людину, з
- * якої утворився - див. HumanEntity#tryZombify(). Якщо пам'яті нема (дикий
- * зомбі, вилікуваний гравцем) - при лікуванні генерується випадкова нова
- * людина замість відновлення точних даних.
- *
- * ZombifiedRynarEntity успадковує цей клас і перевизначає лише
- * createRestoredHuman() (щоб відновлювати RynarEntity, а не HumanEntity) -
- * решта поведінки спільна.
- */
+
+
+
+
+
+
+
+
+
+
 public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuman {
 
     public static final EntityType<ZombifiedHumanEntity> ZOMBIFIED_HUMAN = Registry.register(
@@ -54,7 +54,7 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
     };
     private static final float UNEMPLOYED_CHANCE = 0.4f;
 
-    /** Орієнтовний максимум getClampedLocalDifficulty() у ваніллі - формула шансу лікування нормалізує відносно нього. */
+
     private static final float ASSUMED_MAX_DIFFICULTY = 6.75f;
     private static final float CURE_CHANCE_AT_MIN_DIFFICULTY = 0.35f;
     private static final float CURE_CHANCE_AT_MAX_DIFFICULTY = 0.10f;
@@ -62,13 +62,14 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
     @Nullable
     private NbtCompound npcMemory;
 
-    /**
-     * Природний спавн (мобспавнер, заміна ванільного зомбі і т.п.) завжди
-     * проходить через initialize() - на відміну від tryZombify() в
-     * HumanEntity, який спавнить вручну через world.spawnEntity() і НЕ
-     * викликає initialize(). Тому без цього оверрайду дикий зомбі лишався б
-     * назавжди isFemale=false/profession="none" - без генератора значень.
-     */
+
+
+
+
+
+
+
+    /** Ініціалізує стан сутності під час спавну. */
     @Override
     public net.minecraft.entity.EntityData initialize(net.minecraft.world.ServerWorldAccess world,
                                                       net.minecraft.world.LocalDifficulty difficulty, net.minecraft.entity.SpawnReason spawnReason,
@@ -77,23 +78,25 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public net.minecraft.util.Identifier getLootTableId() {
         return net.minecraft.entity.EntityType.ZOMBIE.getLootTableId();
     }
 
-    /**
-     * ВАЖЛИВО: .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE, 0.0)
-     * тут навмисно - без цього рядка спадкований від ZombieEntity.createZombieAttributes()
-     * ванільний шанс "покликати підкріплення" лишається активним: на Hard-
-     * складності поранений зомбі-людина (і кадавр, який бере цей самий
-     * білдер - див. ZombifiedHumanHuskEntity.createZombifiedHumanHuskAttributes())
-     * міг спавнити поруч ще одного зомбі - саме це і виглядало як
-     * "дублювання" при ударі по ньому.
-     * TODO: якщо константа EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS_CHANCE
-     * відсутня/перейменована у твоєму Yarn мапінгу - звір точну назву в
-     * декомпільованому ZombieEntity.createZombieAttributes().
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+    /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createZombifiedHumanAttributes() {
         return ZombieEntity.createZombieAttributes()
                 .add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0);
@@ -103,6 +106,7 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         super(entityType, world);
     }
 
+    /** Реєструє синхронізовані дані сутності. */
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
@@ -110,37 +114,44 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         this.dataTracker.startTracking(PROFESSION, "none");
     }
 
+    /** Перевіряє поточну умову. */
     public boolean isFemale() {
         return this.dataTracker.get(IS_FEMALE);
     }
 
+    /** Оновлює значення властивості. */
     public void setFemale(boolean female) {
         this.dataTracker.set(IS_FEMALE, female);
     }
 
+    /** Повертає поточне значення властивості. */
     public String getProfession() {
         return this.dataTracker.get(PROFESSION);
     }
 
+    /** Оновлює значення властивості. */
     public void setProfession(String profession) {
         this.dataTracker.set(PROFESSION, profession);
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     public NbtCompound getNpcMemory() {
         return this.npcMemory;
     }
 
+    /** Оновлює значення властивості. */
     public void setNpcMemory(@Nullable NbtCompound memory) {
         this.npcMemory = memory;
     }
 
-    /**
-     * Викликається ОДРАЗУ після ручного створення сутності через
-     * ZOMBIFIED_HUMAN.create(world) - для дикого спавну (природний спавнер
-     * тощо), не для конвертації з живої людини (там стать/профу/пам'ять
-     * виставляє сам конвертер напряму - див. HumanEntity#tryZombify()).
-     */
+
+
+
+
+
+
+    /** Генерує випадковий стан. */
     public void rollRandomSpawnData() {
         setFemale(this.random.nextBoolean());
         setProfession(this.random.nextFloat() < UNEMPLOYED_CHANCE
@@ -148,6 +159,7 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
                 : PROFESSION_POOL[this.random.nextInt(PROFESSION_POOL.length)]);
     }
 
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
@@ -158,6 +170,7 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         }
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
@@ -166,11 +179,12 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         if (nbt.contains("MD_NPC_Memory")) npcMemory = nbt.getCompound("MD_NPC_Memory");
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
-        // ZombieEntity, на відміну від HumanoidEntity, НЕ піднімає пітч
-        // дитині сам (у ваніллі це суто ефект зменшеного розміру моделі,
-        // не голосу) - робимо це тут явно, за тим самим принципом.
+
+
+
         if (this.isBaby()) {
             return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.5F;
         }
@@ -178,27 +192,29 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return isFemale() ? base * 1.15f : base * 0.9f;
     }
 
-    /**
-     * Шанс, що PURIFICATION реально вилікує цього зомбі, коли ефект
-     * закінчується - залежить від локальної складності (росте з часом/
-     * віддаленням від точки спавну світу). CURE_CHANCE_AT_MIN_DIFFICULTY при
-     * нульовій складності, спадає до CURE_CHANCE_AT_MAX_DIFFICULTY на
-     * максимумі - обидва значення ЛІМІТ (clamp), формула ніколи не вилазить
-     * за них, навіть якщо ASSUMED_MAX_DIFFICULTY підібраний неточно.
-     */
+
+
+
+
+
+
+
+
+    /** Повертає поточне значення властивості. */
     public float getCureChance(ServerWorld world) {
         float localDifficulty = world.getLocalDifficulty(this.getBlockPos()).getClampedLocalDifficulty();
         float t = MathHelper.clamp(localDifficulty / ASSUMED_MAX_DIFFICULTY, 0.0f, 1.0f);
         return MathHelper.lerp(t, CURE_CHANCE_AT_MIN_DIFFICULTY, CURE_CHANCE_AT_MAX_DIFFICULTY);
     }
 
-    /**
-     * Викликати, коли PURIFICATION-ефект добігає кінця (підключимо окремим
-     * гоулом/тиком - наступний крок). Кидає getCureChance() і, якщо
-     * пощастило, відновлює людину: з пам'яті, якщо є, інакше генерує
-     * випадкову нову. Повертає false, якщо не пощастило - зомбі лишається
-     * зомбі, ефект просто закінчується без результату.
-     */
+
+
+
+
+
+
+
+    /** Виконує спробу дії. */
     public boolean tryCure(ServerWorld world) {
         if (world.getRandom().nextFloat() >= getCureChance(world)) {
             return false;
@@ -213,10 +229,11 @@ public class ZombifiedHumanEntity extends ZombieEntity implements IZombifiedHuma
         return true;
     }
 
-    /**
-     * Яку сутність відновлюємо при лікуванні - HumanEntity тут, RynarEntity
-     * в ZombifiedRynarEntity. Єдине, що перевизначає підклас.
-     */
+
+
+
+
+    /** Створює потрібний обєкт або сутність. */
     @Nullable
     protected hik1tka.risen_races.entity.humanoid.HumanoidEntity createRestoredHuman(ServerWorld world) {
         HumanEntity human = HumanEntity.HUMAN.create(world);

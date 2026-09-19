@@ -9,14 +9,14 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * Активно веде HumanoidEntity до найближчого предмета їжі (їстівне з
- * HumanoidEntity.BREEDING_FOOD_VALUES) в радіусі DETECTION_RADIUS.
- *
- * Сам підбір ("взяти в руки" + звук) робить вбудований цикл
- * MobEntity.tick() через HumanoidEntity.loot(...), коли предмет
- * опиняється в межах ~1 блоку - цей Goal лише забезпечує підхід.
- */
+
+
+
+
+
+
+
+
 public class PickUpFoodGoal extends Goal {
 
     private static final double DETECTION_RADIUS = 8.0D;
@@ -30,10 +30,11 @@ public class PickUpFoodGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canStart() {
-        // Вже досить їжі назбирано - не відволікаємось на нову, звільняємо
-        // пріоритет для FindMateGoal.
+
+
         if (humanoid.hasEnoughFoodToBreed()) {
             return false;
         }
@@ -50,6 +51,7 @@ public class PickUpFoodGoal extends Goal {
         return targetItem != null;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
         return targetItem != null
@@ -58,6 +60,7 @@ public class PickUpFoodGoal extends Goal {
                 && !humanoid.hasEnoughFoodToBreed();
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         if (targetItem == null) {
@@ -66,6 +69,7 @@ public class PickUpFoodGoal extends Goal {
         humanoid.getNavigation().startMovingTo(targetItem, MOVE_SPEED);
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void stop() {
         targetItem = null;

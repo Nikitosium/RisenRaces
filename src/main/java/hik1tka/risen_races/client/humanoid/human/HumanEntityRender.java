@@ -2,7 +2,7 @@ package hik1tka.risen_races.client.humanoid.human;
 
 import hik1tka.risen_races.client.humanoid.human.model.profession.hat.FarmerHatModel;
 import hik1tka.risen_races.client.humanoid.human.model.profession.hat.FishermanHatModel;
-import hik1tka.risen_races.entity.humanoid.human.HumanEntity; // Оновлений пакет твого ентіті
+import hik1tka.risen_races.entity.humanoid.human.HumanEntity;
 import hik1tka.risen_races.register.ModModelLayers;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
@@ -31,16 +31,17 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
         this.addFeature(new FishermanHatFeatureRenderer<>(this, fishermanHat));
     }
 
-    /**
-     * Створює PlayerEntityModel, в якому вимкнено вбудований ванільний "дитячий"
-     * ефект (велика голова + стиснуте тіло, як у дитини-жителя). Це поведінка,
-     * яку AnimalModel/BipedEntityModel вмикає САМА в setAngles(), коли
-     * entity.isBaby() == true, і вона не пов'язана з методом scale() нижче.
-     * Тут ми примусово тримаємо child = false, а розмір дитини робимо через
-     * рівномірний scale() - так голова і тіло лишаються пропорційними.
-     */
+
+
+
+
+
+
+
+
     private static PlayerEntityModel<HumanEntity> createModel(ModelPart root, boolean slim) {
         return new PlayerEntityModel<>(root, slim) {
+            /** Оновлює значення властивості. */
             @Override
             public void setAngles(HumanEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
                 super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
@@ -49,12 +50,13 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
         };
     }
 
-    /**
-     * MobEntityRenderer рендерить через поле this.model, яке інакше назавжди
-     * лишається wideModel (виставленим у super(...) конструктора). Тут
-     * перемикаємо його на slimModel/wideModel щотік, перед фактичним рендером,
-     * інакше slimModel так і лишається невикористаним мертвим кодом.
-     */
+
+
+
+
+
+
+    /** Рендерить сутність. */
     @Override
     public void render(HumanEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
@@ -62,6 +64,7 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    /** Повертає текстуру сутності. */
     @Override
     public Identifier getTexture(HumanEntity entity) {
         int id = entity.getSkinId();
@@ -102,6 +105,7 @@ public class HumanEntityRender extends MobEntityRenderer<HumanEntity, PlayerEnti
         }
     }
 
+    /** Застосовує масштаб моделі. */
     @Override
     protected void scale(HumanEntity entity, MatrixStack matrices, float amount) {
         float f = entity.getScaleFactor();

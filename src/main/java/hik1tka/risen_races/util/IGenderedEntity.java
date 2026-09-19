@@ -17,20 +17,20 @@ public interface IGenderedEntity {
     }
 
     default boolean canBreedWithGendered(PassiveEntity other) {
-        // 1. Перевіряємо, чи є партнер сутністю з підтримкою нашого інтерфейсу
+
         if (other instanceof IGenderedEntity otherGendered) {
 
-            // 2. Умова однієї раси: якщо ID рас не збігаються — розмноження заборонено
+
             if (!this.getRaceId().equals(otherGendered.getRaceId())) {
                 return false;
             }
 
-            // 3. Умова протилежної статі: true != false поверне true (статі різні)
-            // Якщо обоє чоловіки (false != false) або обоє жінки (true != true) — поверне false
+
+
             return this.isFemale() != otherGendered.isFemale();
         }
 
-        // Якщо у партнера немає нашої гендерної системи — ніяких дітей
+
         return false;
     }
 

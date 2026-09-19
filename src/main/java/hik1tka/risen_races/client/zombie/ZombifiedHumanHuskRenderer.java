@@ -11,12 +11,12 @@ import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-/**
- * Використовує спільну ванільну модель Husk; у жіночого варіанта рука
- * має slim-ширину: 3/4 від wide-руки.
- * TODO: якщо EntityModelLayers.HUSK відсутній у твоєму мапінгу - звір
- * точну назву константи в декомпільованому EntityModelLayers.
- */
+
+
+
+
+
+
 public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHumanHuskEntity, ZombieEntityModel<ZombifiedHumanHuskEntity>> {
 
     private static final Identifier TEXTURE =
@@ -30,6 +30,7 @@ public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHuman
 
     private static ZombieEntityModel<ZombifiedHumanHuskEntity> createModel(ModelPart root) {
         return new ZombieEntityModel<>(root) {
+            /** Оновлює значення властивості. */
             @Override
             public void setAngles(ZombifiedHumanHuskEntity entity, float limbAngle, float limbDistance,
                                   float animationProgress, float headYaw, float headPitch) {
@@ -39,6 +40,7 @@ public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHuman
         };
     }
 
+    /** Рендерить сутність. */
     @Override
     public void render(ZombifiedHumanHuskEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
@@ -46,6 +48,7 @@ public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHuman
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    /** Застосовує масштаб моделі. */
     @Override
     protected void scale(ZombifiedHumanHuskEntity entity, MatrixStack matrices, float amount) {
         if (entity.isBaby()) {
@@ -63,6 +66,7 @@ public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHuman
         leftArm.zScale = rightArm.zScale = 1.0F;
     }
 
+    /** Повертає текстуру сутності. */
     @Override
     public Identifier getTexture(ZombifiedHumanHuskEntity entity) {
         return TEXTURE;

@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * Раса Ринар - заміна ванільного жителя, той самий HumanoidEntity-каркас,
- * що й у HumanEntity, але без множини скінів: у Ринара всього одна текстура,
- * стать змінює лише геометрію моделі (wide/slim), не текстуру.
- */
+
+
+
+
+
 public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
 
     public static final EntityType<RynarEntity> RYNAR = Registry.register(
@@ -36,6 +36,7 @@ public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
                     .build()
     );
 
+    /** Створює потрібний обєкт або сутність. */
     public static net.minecraft.entity.attribute.DefaultAttributeContainer.Builder createRynarAttributes() {
         return HumanoidEntity.createHumanoidAttributes();
     }
@@ -44,44 +45,51 @@ public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
         super(entityType, world);
     }
 
+    /** Виконує дію компонента. */
     @Override
     protected void afterUsing(TradeOffer offer) {
-        // TODO: підключити торгівлю, коли буде готовий TradeOfferRegistry для раси RYNAR
+
     }
 
+    /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setRace(HumanoidRace.RYNAR);
-        // Стать вирішується тут же, а не в initDataTracker() - той метод
-        // виконується і на клієнті, де рандом ще не синхронізований з сервером
-        // (той самий підхід, що й у HumanEntity.initialize()).
+
+
+
         this.setFemale(this.random.nextBoolean());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
+    /** Обробляє подію життєвого циклу. */
     @Override
     protected void onBabyCreated(HumanoidEntity baby) {
-        // Текстура одна на всіх - тут довизначати нічого, на відміну від
-        // HumanEntity, де для дитини ще й скін по статі рандомізується.
+
+
     }
 
+    /** Створює потрібний обєкт або сутність. */
     @Override
     public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null; // розмноження повністю через HumanoidEntity#breedWith, не ванільне
+        return null;
     }
 
+    /** Повертає поточне значення властивості. */
     public float getScaleFactor() {
         return this.isBaby() ? 0.7f : 1.0f;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
-        float base = super.getSoundPitch(); // тут вже врахований дитячий пітч з HumanoidEntity
-        if (this.isBaby()) return base;      // дитячий і так вищий - гендер зверху не накладаємо
+        float base = super.getSoundPitch();
+        if (this.isBaby()) return base;
         return this.isFemale() ? base * 1.15f : base * 0.9f;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public List<ProfessionDefinition> getAvailableProfessions() {
         return List.of(
@@ -95,31 +103,37 @@ public class RynarEntity extends HumanoidEntity implements IGenderedEntity {
         );
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public String getRaceId() {
         return this.getRace().name().toLowerCase(java.util.Locale.ROOT);
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean isInLove() {
         return false;
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setLoveTicks(int ticks) {
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canBreedWith(PassiveEntity other) {
         return this.canBreedWithGendered(other);
     }
 
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        // Додаткових полів нема - усе (раса/стать/проф/jobSite) вже пише HumanoidEntity.
+
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);

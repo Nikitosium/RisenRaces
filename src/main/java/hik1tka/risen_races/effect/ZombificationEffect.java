@@ -13,6 +13,7 @@ public class ZombificationEffect extends StatusEffect {
         super(category, color);
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0, false, false, false));
@@ -21,11 +22,13 @@ public class ZombificationEffect extends StatusEffect {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 0, false, false, false));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        return duration % 20 == 0; // Спрацьовує раз на секунду
+        return duration % 20 == 0;
     }
 
+    /** Обробляє подію життєвого циклу. */
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
 

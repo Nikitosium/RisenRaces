@@ -8,12 +8,12 @@ import net.minecraft.util.math.Box;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * Шукає партнера для розмноження серед HumanoidEntity поблизу:
- * та ж раса, протилежна isFemale, обидва без кулдауну, і є вільне місце в
- * поселенні (VillageCapacityHelper - ліжок має бути більше, ніж уже живих).
- * Коли знайшов і підійшов достатньо близько - викликає breedWith().
- */
+
+
+
+
+
+
 public class FindMateGoal extends Goal {
 
     private static final double SEARCH_RADIUS = 8.0D;
@@ -27,6 +27,7 @@ public class FindMateGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canStart() {
         if (!self.isBreedingReady()) return false;
@@ -42,11 +43,13 @@ public class FindMateGoal extends Goal {
         return true;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
         return target != null && target.isAlive() && self.canBreedWith(target) && self.isBreedingReady();
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         if (target == null) return;
@@ -59,6 +62,7 @@ public class FindMateGoal extends Goal {
         }
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void stop() {
         target = null;

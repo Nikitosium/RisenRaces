@@ -12,7 +12,8 @@ public class RisenRaces implements ModInitializer {
     public static final String MOD_ID = "risen_races";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    //Initialise registry
+
+    /** Ініціалізує реєстри та обробники модуля. */
     @Override
     public void onInitialize() {
         LOGGER.info(MOD_ID +"Mod has been initialised");
@@ -26,6 +27,7 @@ public class RisenRaces implements ModInitializer {
         ModZombieReplacement.register();
     }
 
+    /** Виконує дію компонента. */
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
     }

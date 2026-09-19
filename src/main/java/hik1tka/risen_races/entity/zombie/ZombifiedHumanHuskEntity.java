@@ -17,12 +17,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
-/**
- * Кадавр (Husk) - варіант ZombifiedHumanEntity для пустель/саван/джунглів
- * (див. ZombieVariantHelper.resolveVariant()). Успадковує всю логіку
- * памʼяті/лікування/статі/професії від ZombifiedHumanEntity - тут лише
- * два поведінкові штрихи, що відрізняють ванільного Husk від Zombie.
- */
+
+
+
+
+
+
 public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
 
     public static final EntityType<ZombifiedHumanHuskEntity> ZOMBIFIED_HUMAN_HUSK = Registry.register(
@@ -33,12 +33,14 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
                     .build()
     );
 
+    /** Створює потрібний обєкт або сутність. */
     public static DefaultAttributeContainer.Builder createZombifiedHumanHuskAttributes() {
-        // Ті самі атрибути, що й у звичайного зомбі-людини - Husk у ваніллі
-        // теж не відрізняється базовими статами від Zombie.
+
+
         return ZombifiedHumanEntity.createZombifiedHumanAttributes();
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public net.minecraft.util.Identifier getLootTableId() {
         return EntityType.HUSK.getLootTableId();
@@ -48,22 +50,24 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
         super(entityType, world);
     }
 
-    /**
-     * Кадавр не горить на сонці - ключова відмінність від звичайного зомбі.
-     * TODO: якщо isAffectedByDaylight() відсутній/перейменований у твоєму
-     * Yarn мапінгу - звір з декомпільованим HuskEntity в IDE.
-     */
+
+
+
+
+
+    /** Перевіряє поточну умову. */
     @Override
     protected boolean isAffectedByDaylight() {
         return false;
     }
 
-    /**
-     * Той самий ефект голоду при ударі, що у ванільного Husk (спрощено -
-     * фіксована тривалість, без розбивки по силі удару/зброї).
-     * TODO: якщо сигнатура tryAttack(Entity) відрізняється у твоєму мапінгу -
-     * звір з декомпільованим MobEntity/ZombieEntity в IDE.
-     */
+
+
+
+
+
+
+    /** Виконує спробу дії. */
     @Override
     public boolean tryAttack(Entity target) {
         boolean success = super.tryAttack(target);
@@ -74,6 +78,7 @@ public class ZombifiedHumanHuskEntity extends ZombifiedHumanEntity {
         return success;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getSoundPitch() {
         if (this.isBaby()) {

@@ -10,28 +10,28 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-/**
- * Коли RisenPiglin врятований (hasRescuer()) і перебуває в Незері - шукає
- * найближчий блок NETHER_PORTAL і біжить туди, ігноруючи звичайну поведінку
- * (слідування/бій/економіку - вищий пріоритет за все, крім критичного хп).
- *
- * Якщо шлях до самого блоку порталу фізично неможливий (лава, провалля,
- * суцільна стіна) - навігація "застрягає" (isIdle() без прогресу). Після
- * GIVE_UP_STUCK_TICKS без прогресу зупиняємось за SAFE_STOP_DISTANCE блоків
- * ДО порталу замість того, щоб нескінченно товктись на місці чи ризикувати
- * впасти в провалля/лаву, намагаючись дотягнутись до самого блоку.
- *
- * Уникнення перешкод по дорозі забезпечує сама ванільна навігація
- * (EntityNavigation) - додаткової логіки для цього не треба.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class SeekNetherPortalGoal extends Goal {
 
     private static final int SEARCH_RADIUS_XZ = 24;
     private static final int SEARCH_RADIUS_Y = 8;
-    private static final int RESCAN_INTERVAL_TICKS = 40; // раз на 2 сек - повний скан блоків недешевий
-    private static final double SAFE_STOP_DISTANCE = 2.0D; // блоків від краю порталу, якщо шлях небезпечний/неможливий
+    private static final int RESCAN_INTERVAL_TICKS = 40;
+    private static final double SAFE_STOP_DISTANCE = 2.0D;
     private static final double ARRIVE_DISTANCE_SQ = 1.5D * 1.5D;
-    private static final int GIVE_UP_STUCK_TICKS = 60; // 3 сек без прогресу - вважаємо шлях неможливим
+    private static final int GIVE_UP_STUCK_TICKS = 60;
 
     private final RisenPiglinEntity piglin;
     private BlockPos portalPos;
@@ -44,6 +44,7 @@ public class SeekNetherPortalGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canStart() {
         if (!isInNether()) return false;
@@ -57,17 +58,19 @@ public class SeekNetherPortalGoal extends Goal {
         return portalPos != null;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
         if (portalPos == null || !isInNether()) return false;
         if (!piglin.getWorld().getBlockState(portalPos).isOf(Blocks.NETHER_PORTAL)) {
-            // Портал зник (розібрали/загас) - шукаємо інший наступного разу.
+
             return false;
         }
         return piglin.squaredDistanceTo(
                 portalPos.getX() + 0.5, portalPos.getY(), portalPos.getZ() + 0.5) > ARRIVE_DISTANCE_SQ;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void start() {
         stuckTicks = 0;
@@ -75,6 +78,7 @@ public class SeekNetherPortalGoal extends Goal {
         moveToward(portalPos);
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         piglin.getLookControl().lookAt(
@@ -87,7 +91,7 @@ public class SeekNetherPortalGoal extends Goal {
                     moveToSafeStandoff();
                     onStandoff = true;
                 }
-                // вже на "безпечній" точці - просто стоїмо, далі не товчемось
+
                 return;
             }
             moveToward(portalPos);
@@ -97,6 +101,7 @@ public class SeekNetherPortalGoal extends Goal {
         }
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void stop() {
         portalPos = null;
@@ -111,10 +116,10 @@ public class SeekNetherPortalGoal extends Goal {
         piglin.getNavigation().startMovingTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 1.2D);
     }
 
-    /**
-     * Точка на SAFE_STOP_DISTANCE блоків БЛИЖЧЕ до пігліна, ніж сам портал -
-     * тобто "не доходячи" до краю, а не "проходячи повз/крізь" нього.
-     */
+
+
+
+
     private void moveToSafeStandoff() {
         Vec3d portalCenter = Vec3d.ofCenter(portalPos);
         Vec3d toPortal = portalCenter.subtract(piglin.getPos());
@@ -147,11 +152,11 @@ public class SeekNetherPortalGoal extends Goal {
                 }
             }
         }
-        // TODO: повний перебір SEARCH_RADIUS_XZ*2 x SEARCH_RADIUS_Y*2 x SEARCH_RADIUS_XZ*2
-        // блоків раз на 40 тіків - прийнятно для кількох піглінів, але якщо їх
-        // буде багато одночасно (натовп врятованих) і це стане помітно на
-        // продуктивності - варто кешувати позицію найближчого порталу спільно
-        // (напр. по чанках) замість того, щоб кожен піглін сканував окремо.
+
+
+
+
+
         return closest;
     }
 }

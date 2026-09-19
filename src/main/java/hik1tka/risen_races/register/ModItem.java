@@ -29,6 +29,7 @@ public class ModItem {
         return Registry.register(Registries.ITEM, new Identifier(MOD_ID, name), item);
     }
 
+    /** Виконує дію компонента. */
     public static void registerModItem(){
         RisenRaces.LOGGER.info("Register Mod Items for " + MOD_ID);
 

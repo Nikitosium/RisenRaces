@@ -15,17 +15,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-/**
- * Визначає, у який підвид зомбі перетворюється людина (HumanEntity#tryZombify)
- * або дикий ванільний зомбі (ModZombieReplacement) - за біомом на позиції
- * ентіті, і водночас створює відповідний ентіті одним викликом (create()).
- *
- * Пріоритет перевірки: спершу "фізично у воді ЗАРАЗ" (найширша умова -
- * покриває "інші водойми", яких немає в явному списку біомів нижче,
- * наприклад ставок посеред рівнини), потім конкретні водні біоми (утопець),
- * і лише потім сухі спекотні біоми (кадавр). Якщо жоден варіант не підійшов -
- * звичайний ZombifiedHumanEntity.
- */
+
+
+
+
+
+
+
+
+
+
+
 public final class ZombieVariantHelper {
 
     private ZombieVariantHelper() {
@@ -48,9 +48,10 @@ public final class ZombieVariantHelper {
             BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH, BiomeKeys.STONY_SHORE
     );
 
+    /** Знаходить потрібний обєкт. */
     public static ZombieVariant resolveVariant(ServerWorld world, Entity entity) {
-        // Найширша умова - фізично у воді просто зараз, незалежно від
-        // біома (ставок/канал/будь-яка інша водойма, не перелічена нижче).
+
+
         if (entity.isTouchingWater()) {
             return ZombieVariant.DROWNED;
         }
@@ -71,11 +72,12 @@ public final class ZombieVariantHelper {
         return ZombieVariant.NORMAL;
     }
 
-    /**
-     * Створює конкретний ентіті-зомбі під переданий варіант. Повертає null,
-     * якщо create() з якоїсь причини не вдався (ваніль так само може
-     * повернути null - наприклад, якщо реєстр ще не готовий).
-     */
+
+
+
+
+
+    /** Створює потрібний обєкт або сутність. */
     @Nullable
     public static ZombieEntity create(ServerWorld world, ZombieVariant variant) {
         return switch (variant) {

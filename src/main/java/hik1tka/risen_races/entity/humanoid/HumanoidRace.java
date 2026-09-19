@@ -4,12 +4,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-/**
- * Раса для HumanoidEntity.
- * Тут зберігається все, що відрізняє расу: текстура, звуки, тип поведінки
- * на небезпеку. Базовий інтелект (торгівля, розмноження) спільний і лежить
- * у самому HumanoidEntity — раса лише "перемикає" деталі.
- */
+
+
+
+
+
+
 public enum HumanoidRace {
 
     HUMAN(
@@ -28,7 +28,7 @@ public enum HumanoidRace {
     ),
     RYNAR(
             new Identifier("yourmod", "textures/entity/humanoid/rynar.png"),
-            SoundEvents.ENTITY_VILLAGER_AMBIENT, // заміни на свій кастомний звук пізніше
+            SoundEvents.ENTITY_VILLAGER_AMBIENT,
             SoundEvents.ENTITY_VILLAGER_HURT,
             SoundEvents.ENTITY_VILLAGER_DEATH,
             DangerBehavior.FLEE
@@ -49,31 +49,36 @@ public enum HumanoidRace {
         this.dangerBehavior = dangerBehavior;
     }
 
+    /** Повертає текстуру сутності. */
     public Identifier getTexture() {
         return texture;
     }
 
+    /** Повертає поточне значення властивості. */
     public SoundEvent getAmbientSound() {
         return ambientSound;
     }
 
+    /** Повертає поточне значення властивості. */
     public SoundEvent getHurtSound() {
         return hurtSound;
     }
 
+    /** Повертає поточне значення властивості. */
     public SoundEvent getDeathSound() {
         return deathSound;
     }
 
+    /** Повертає поточне значення властивості. */
     public DangerBehavior getDangerBehavior() {
         return dangerBehavior;
     }
 
-    /**
-     * Тип поведінки на появу небезпеки.
-     * FLEE  -> Human, Rynar
-     * FIGHT -> RizenPiglin (з логікою "1-2 вороги = б'ється сам, 3+ = кличе на допомогу")
-     */
+
+
+
+
+
     public enum DangerBehavior {
         FLEE,
         FIGHT

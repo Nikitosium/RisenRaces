@@ -22,6 +22,7 @@ public class ModSounds {
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
+    /** Виконує дію компонента. */
     public static void registerSounds() {
         RisenRaces.LOGGER.info("Registering Mod Sounds for " + RisenRaces.MOD_ID);
     }

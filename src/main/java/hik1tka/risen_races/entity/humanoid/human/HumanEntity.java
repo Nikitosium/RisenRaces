@@ -33,8 +33,9 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
                     .build()
     );
 
+    /** Створює потрібний обєкт або сутність. */
     public static net.minecraft.entity.attribute.DefaultAttributeContainer.Builder createHumanAttributes() {
-        // Береш з HumanoidEntity, а не з VillagerEntity - HumanEntity з ним не споріднений.
+
         return HumanoidEntity.createHumanoidAttributes();
     }
 
@@ -44,71 +45,64 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         super(entityType, world);
     }
 
+    /** Реєструє синхронізовані дані сутності. */
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(SKIN_ID, 0);
-        // Стать НЕ рандомізуємо тут - initDataTracker() виконується і на
-        // клієнті (для кожної локальної "примарної" копії ентіті), а не
-        // тільки на сервері. Рандомний setFemale() тут створював стан, коли
-        // клієнтська копія на мить мала СВОЄ власне випадкове isFemale,
-        // не синхронізоване з сервером ще - і якщо звук встигав програтись
-        // саме в цю мить, лунала не та стать. Реальна стать вирішується
-        // один раз, тільки на сервері, у initialize() нижче.
     }
 
+    /** Виконує дію компонента. */
     @Override
     protected void afterUsing(TradeOffer offer) {
 
     }
 
+    /** Ініціалізує стан сутності під час спавну. */
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setRace(hik1tka.risen_races.entity.humanoid.HumanoidRace.HUMAN);
 
-        // Стать вирішується тут, а не в initDataTracker() - цей метод
-        // гарантовано виконується лише на сервері й лише один раз за спавн.
         this.setFemale(this.random.nextBoolean());
         this.rollSkinForGender();
 
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    /**
-     * Рандомізує SkinId відповідно до поточної статі (isFemale()).
-     * Викликається і при природному спавні (initialize), і для дітей,
-     * народжених через HumanoidEntity#breedWith (onBabyCreated).
-     */
     private void rollSkinForGender() {
         if (this.isFemale()) {
-            // Жіночі скіни: 0..11 (всього 12 скінів)
+
             this.setSkinId(this.random.nextInt(12));
         } else {
-            // Чоловічі скіни: 0..9 (всього 10 скінів)
+
             this.setSkinId(this.random.nextInt(10));
         }
     }
 
+    /** Обробляє подію життєвого циклу. */
     @Override
     protected void onBabyCreated(hik1tka.risen_races.entity.humanoid.HumanoidEntity baby) {
-        // На момент виклику цього хука стать дитини (setFemale) вже виставлена
-        // в breedWith(), тому тут просто підбираємо скін під неї.
+
+
         if (baby instanceof HumanEntity human) {
             human.rollSkinForGender();
         }
     }
 
+    /** Створює потрібний обєкт або сутність. */
     @Override
     public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
         return this.isFemale() ? ModSounds.FEMALE_AMBIENT : ModSounds.MALE_AMBIENT;
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
@@ -118,55 +112,47 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         return this.isFemale() ? ModSounds.FEMALE_HURT : ModSounds.MALE_HURT;
     }
 
+    /** Повертає поточне значення властивості. */
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
         return ModSounds.ENTITY_DEATH;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     protected SoundEvent getTradingSound(boolean sold) {
         if (!sold) {
             return this.isFemale() ? super.getTradingSound(false) : ModSounds.MALE_NO;
-            // Коли буде готовий звук для жінки, розкоментуй:
-            // return this.isFemale() ? ModSounds.FEMALE_NO : ModSounds.MALE_NO;
+
+
         }
         return super.getTradingSound(sold);
     }
 
+    /** Повертає поточне значення властивості. */
     public int getSkinId() {
         return this.dataTracker.get(SKIN_ID);
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public float getScaleFactor() {
         return this.isBaby() ? 0.7f : 1.0f;
     }
 
-    /**
-     * Рендерер зменшує дитину до 70% дорослої моделі. Хітбокс має повторювати
-     * цей самий масштаб, інакше по візуально маленькій дитині можна влучити
-     * поза її тілом.
-     */
+    /** Повертає габарити хітбоксу. */
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
         return super.getDimensions(pose).scaled(getScaleFactor());
     }
 
+    /** Оновлює значення властивості. */
     public void setSkinId(int id) {
         this.dataTracker.set(SKIN_ID, id);
     }
 
-    /**
-     * Замість звичайної смерті від зомбі-подібного нападника - шанс
-     * конвертації в підвид ZombifiedHumanEntity (звичайний/кадавр/утопець -
-     * залежно від біома, див. ZombieVariantHelper) зі збереженням статі/
-     * скіна/імені/віку/професії в MD_NPC_Memory.
-     *
-     * Сам шанс перетворення (а не гарантована смерть) залежить від
-     * складності світу - як зараження жителя ваніллю: легка 0% (завжди
-     * звичайна смерть), середня 50%, складна 100% (завжди перетворення).
-     */
+    /** Обробляє отриману шкоду. */
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (!this.getWorld().isClient
@@ -177,19 +163,13 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
             float chance = getZombificationChance(serverWorld.getDifficulty());
             if (this.random.nextFloat() < chance) {
                 tryZombify(serverWorld);
-                return true; // "пошкодження оброблено" - справжньої смерті не відбувається
+                return true;
             }
-            // не пощастило - людина помирає як зазвичай, падаємо в super.damage() нижче
+
         }
         return super.damage(source, amount);
     }
 
-    /**
-     * Шанс перетворення на зомбі при смертельному ударі зомбі - як у
-     * ванільному зараженні жителів, прив'язано до Difficulty світу (НЕ до
-     * регіональної local difficulty, яка ще й від відстані/часу залежить -
-     * тут навмисно проста прив'язка тільки до глобального рівня складності).
-     */
     private static float getZombificationChance(net.minecraft.world.Difficulty difficulty) {
         return switch (difficulty) {
             case PEACEFUL, EASY -> 0.0f;
@@ -201,20 +181,15 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
     private void tryZombify(net.minecraft.server.world.ServerWorld world) {
         hik1tka.risen_races.util.ZombieVariant variant =
                 hik1tka.risen_races.util.ZombieVariantHelper.resolveVariant(world, this);
-        // Тип - ZombieEntity: утопець тепер успадковує ванільного DrownedEntity,
-        // а не нашого ZombifiedHumanEntity, тож спільного предка з нашими
-        // полями нема - стать/професію/пам'ять ставить через IZombifiedHuman.
+
+
+
         net.minecraft.entity.mob.ZombieEntity zombie =
                 hik1tka.risen_races.util.ZombieVariantHelper.create(world, variant);
         if (zombie == null) return;
 
         zombie.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-        // ВАЖЛИВО: без цього рядка щойно заспавнений зомбі завжди isBaby()==false,
-        // навіть якщо конвертується дитина - IsBaby у пам'яті нижче використовується
-        // лише при ЛІКУВАННІ (відновленні людини), а на сам зомбі ніколи не
-        // переносився. Саме тому не працював скейл моделі (renderer.scale()
-        // перевіряє entity.isBaby()) і звуковий пітч (getSoundPitch() теж
-        // перевіряє isBaby() першим) для зомбі, що виник із дитини.
+
         zombie.setBaby(this.isBaby());
 
         net.minecraft.nbt.NbtCompound memory = new net.minecraft.nbt.NbtCompound();
@@ -234,6 +209,7 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         this.discard();
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public java.util.List<hik1tka.risen_races.entity.humanoid.data.ProfessionDefinition> getAvailableProfessions() {
         return java.util.List.of(
@@ -250,46 +226,49 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         );
     }
 
-    // TODO: getProfession() приберено — getVillagerData() існує лише у VillagerEntity,
-    // якого HumanoidEntity не наслідує. Коли зробиш власну систему професій,
-    // додай сюди свій метод (наприклад через ще один TrackedData<String>).
-
+    /** Повертає поточне значення властивості. */
     public float getScaleModifier() {
         return this.isFemale() ? 0.95f : 1.0f;
     }
 
+    /** Повертає поточне значення властивості. */
     @Override
     public String getRaceId() {
-        // Похідне від getRace() з HumanoidEntity, а не окремий хардкод -
-        // одне джерело правди для раси.
+
+
         return this.getRace().name().toLowerCase(java.util.Locale.ROOT);
     }
 
-    // isFemale()/setFemale() тепер повністю успадковані від HumanoidEntity -
-    // окремо не перевизначаємо, щоб не було двох джерел правди.
 
+
+
+    /** Перевіряє поточну умову. */
     @Override
     public boolean isInLove() {
         return false;
     }
 
+    /** Оновлює значення властивості. */
     @Override
     public void setLoveTicks(int ticks) {
-        // Не використовується: люди не мають "закоханості" від їжі гравцем,
-        // як і звичайні жителі — розмноження повністю автоматичне (ваніль).
+
+
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canBreedWith(PassiveEntity other) {
         return this.canBreedWithGendered(other);
     }
 
+    /** Зберігає стан у NBT. */
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("SkinId", this.getSkinId());
     }
 
+    /** Відновлює стан з NBT. */
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);

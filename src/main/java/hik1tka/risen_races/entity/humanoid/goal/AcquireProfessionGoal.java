@@ -11,20 +11,20 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Шукає вільне робоче місце (POI) серед професій, доступних расі цього ентіті
- * (HumanoidEntity#getAvailableProfessions), йде туди і забирає професію.
- *
- * "Вільне" перевіряється двічі:
- *  1) при пошуку - через ванільний PointOfInterestStorage (OccupationStatus.HAS_SPACE),
- *     це відсіює більшість зайнятих місць дешево;
- *  2) при прибутті - додатково перевіряємо, чи інший HumanoidEntity вже не встиг
- *     заявити собі саме цю позицію як jobSite (власний облік, без ванільних тікетів).
- */
+
+
+
+
+
+
+
+
+
+
 public class AcquireProfessionGoal extends Goal {
 
-    private static final int RESCAN_COOLDOWN_TICKS = 200; // 10 сек між спробами
-    private static final int GIVE_UP_TICKS = 600;         // 30 сек - якщо не дійшов, кидаємо спробу
+    private static final int RESCAN_COOLDOWN_TICKS = 200;
+    private static final int GIVE_UP_TICKS = 600;
 
     private final HumanoidEntity entity;
     private int cooldown = 0;
@@ -38,6 +38,7 @@ public class AcquireProfessionGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canStart() {
         if (cooldown > 0) {
@@ -72,6 +73,7 @@ public class AcquireProfessionGoal extends Goal {
         return false;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
         return targetPos != null
@@ -79,12 +81,14 @@ public class AcquireProfessionGoal extends Goal {
                 && pathingTicks < GIVE_UP_TICKS;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void start() {
         pathingTicks = 0;
         moveToTarget();
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         pathingTicks++;
@@ -98,6 +102,7 @@ public class AcquireProfessionGoal extends Goal {
         }
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void stop() {
         targetPos = null;
@@ -114,8 +119,8 @@ public class AcquireProfessionGoal extends Goal {
     private void tryClaim() {
         if (!(entity.getWorld() instanceof ServerWorld world)) return;
 
-        // Перевіряємо ще раз, вже впритул - раптом хтось інший встиг зайняти
-        // цю позицію, поки ми йшли.
+
+
         if (isClaimedByOtherHumanoid(world, targetPos)) {
             this.targetPos = null;
             this.targetProfession = null;

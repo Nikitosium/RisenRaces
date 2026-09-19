@@ -16,17 +16,17 @@ import net.minecraft.client.render.entity.model.PiglinEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-/**
- * На відміну від RynarEntityRender (там одна геометрія, різниця лише в
- * scale) - тут чоловіки й жінки мають СПРАВДІ різну геометрію (жіночі руки
- * вужчі не через скейл, а вже так намальовані в моделі; жіноча голова без
- * "морди"/ікол узагалі). Тому тут два окремих екземпляри моделі, а не
- * скейл-перемикач на спільній.
- *
- * Чоловік - ванільна геометрія (PiglinEntityModel + EntityModelLayers.PIGLIN),
- * як і раніше. Жінка - RisenFemalePiglinModel, зібрана вручну з
- * female_piglin.json.
- */
+
+
+
+
+
+
+
+
+
+
+
 public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity, EntityModel<RisenPiglinEntity>> {
 
     private static final Identifier TEXTURE =
@@ -41,24 +41,25 @@ public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity
         this.femaleModel = new RisenFemalePiglinModel<>(context.getPart(ModModelLayers.RISEN_PIGLIN_FEMALE));
         this.addFeature(new RisenPiglinClothingFeatureRenderer(this));
 
-        // Ті самі моделі шапок, що й у людини (FarmerHatModel/FishermanHatModel
-        // самі по собі узагальнені по Entity - їх не треба дублювати для пігліна).
+
+
         this.addFeature(new FarmerHatFeatureRenderer<>(this, new FarmerHatModel<>(context.getPart(ModModelLayers.FARMER_HAT))));
         this.addFeature(new FishermanHatFeatureRenderer<>(this, new FishermanHatModel<>(context.getPart(ModModelLayers.FISHERMAN_HAT))));
     }
 
-    /**
-     * Той самий трюк, що вже застосований для Human/PlayerEntityModel:
-     * BipedEntityModel має вбудований прапорець "child", який САМ включає
-     * ефект "велика голова + стиснуте тіло" для дитини - PiglinEntityModel
-     * успадковує цю поведінку від BipedEntityModel/AnimalModel. Оскільки ми
-     * і так робимо розмір дитини через власний RisenPiglinEntity.getScaleFactor(),
-     * цей вбудований ефект - зайвий, і саме він давав хлопчикам завелику
-     * голову (жіноча кастомна модель такого вбудованого прапорця не має,
-     * тому дівчата й були нормальні).
-     */
+
+
+
+
+
+
+
+
+
+
     private static PiglinEntityModel<RisenPiglinEntity> createMaleModel(net.minecraft.client.model.ModelPart root) {
         return new PiglinEntityModel<>(root) {
+            /** Оновлює значення властивості. */
             @Override
             public void setAngles(RisenPiglinEntity entity, float limbAngle, float limbDistance,
                                   float animationProgress, float headYaw, float headPitch) {
@@ -68,6 +69,7 @@ public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity
         };
     }
 
+    /** Рендерить сутність. */
     @Override
     public void render(RisenPiglinEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
@@ -75,14 +77,16 @@ public class RisenPiglinEntityRender extends MobEntityRenderer<RisenPiglinEntity
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    /** Повертає текстуру сутності. */
     @Override
     public Identifier getTexture(RisenPiglinEntity entity) {
-        // Та сама ванільна текстура для обох - UV-координати в
-        // RisenFemalePiglinModel скопійовані з того самого файлу, що й
-        // ванільна модель, тому текстура одна й та сама пасує обом.
+
+
+
         return TEXTURE;
     }
 
+    /** Застосовує масштаб моделі. */
     @Override
     protected void scale(RisenPiglinEntity entity, MatrixStack matrices, float amount) {
         float f = entity.getScaleFactor();

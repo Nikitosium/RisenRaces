@@ -28,6 +28,7 @@ public class RynarEntityRender extends MobEntityRenderer<RynarEntity, VillagerRe
         this.addFeature(new FishermanHatFeatureRenderer<>(this, new FishermanHatModel<>(context.getPart(ModModelLayers.FISHERMAN_HAT))));
     }
 
+    /** Рендерить сутність. */
     @Override
     public void render(RynarEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
@@ -60,11 +61,13 @@ public class RynarEntityRender extends MobEntityRenderer<RynarEntity, VillagerRe
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
+    /** Повертає текстуру сутності. */
     @Override
     public Identifier getTexture(RynarEntity entity) {
         return TEXTURE;
     }
 
+    /** Застосовує масштаб моделі. */
     @Override
     protected void scale(RynarEntity entity, MatrixStack matrices, float amount) {
         float f = entity.getScaleFactor();

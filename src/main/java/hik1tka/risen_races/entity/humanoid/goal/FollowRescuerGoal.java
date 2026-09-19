@@ -8,19 +8,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-/**
- * Слідування врятованого RisenPiglin за ціллю, яку повертає
- * RisenPiglinEntity.resolveFollowTarget() - гравець-рятівник, якщо цей
- * піглін "головний", або інший RisenPiglin попереду в ланцюжку ("паровозик",
- * як караван лам) - див. RisenPiglinEntity.assignTrainPosition().
- *
- * Активний лише в Незері - за межами Незеру рятувати вже нема від чого
- * тікати, і піглін повертається до звичайної поведінки раси.
- */
+
+
+
+
+
+
+
+
+
 public class FollowRescuerGoal extends Goal {
 
     private static final double FOLLOW_SPEED = 1.0D;
-    // Тримає дистанцію "паровозика" - не стається впритул одне на одного.
+
     private static final double STOP_DISTANCE_SQ = 3.0D * 3.0D;
     private static final double START_DISTANCE_SQ = 4.0D * 4.0D;
 
@@ -33,6 +33,7 @@ public class FollowRescuerGoal extends Goal {
         this.setControls(EnumSet.of(Control.MOVE));
     }
 
+    /** Перевіряє поточну умову. */
     @Override
     public boolean canStart() {
         if (!isInNether() || !piglin.hasRescuer()) {
@@ -43,6 +44,7 @@ public class FollowRescuerGoal extends Goal {
                 && piglin.squaredDistanceTo(followTarget) > START_DISTANCE_SQ;
     }
 
+    /** Виконує дію компонента. */
     @Override
     public boolean shouldContinue() {
         if (!isInNether() || !piglin.hasRescuer()) {
@@ -54,6 +56,7 @@ public class FollowRescuerGoal extends Goal {
                 && piglin.squaredDistanceTo(followTarget) > STOP_DISTANCE_SQ;
     }
 
+    /** Оновлює стан сутності щотік. */
     @Override
     public void tick() {
         if (followTarget == null) {
@@ -65,6 +68,7 @@ public class FollowRescuerGoal extends Goal {
         }
     }
 
+    /** Виконує дію компонента. */
     @Override
     public void stop() {
         followTarget = null;

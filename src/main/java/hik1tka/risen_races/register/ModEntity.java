@@ -10,10 +10,11 @@ import hik1tka.risen_races.entity.zombie.ZombifiedHumanHuskEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 
 public class ModEntity {
+    /** Виконує дію компонента. */
     public static void registerModEntity(){
         RisenRaces.LOGGER.info("Register Mod Entities for " + RisenRaces.MOD_ID);
 
-        //Entities:
+
         FabricDefaultAttributeRegistry.register(HumanEntity.HUMAN, HumanEntity.createHumanAttributes());
         FabricDefaultAttributeRegistry.register(RisenPiglinEntity.RISEN_PIGLIN, RisenPiglinEntity.createRisenPiglinAttributes());
         FabricDefaultAttributeRegistry.register(RynarEntity.RYNAR, RynarEntity.createRynarAttributes());
