@@ -12,8 +12,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 /**
- * Той самий прийом гендерного скейлу рук, що ZombifiedHumanEntityRenderer -
- * лише інша текстура/шар моделі (ванільний Husk).
+ * Використовує спільну ванільну модель Husk; у жіночого варіанта рука
+ * має slim-ширину: 3/4 від wide-руки.
  * TODO: якщо EntityModelLayers.HUSK відсутній у твоєму мапінгу - звір
  * точну назву константи в декомпільованому EntityModelLayers.
  */
@@ -21,35 +21,46 @@ public class ZombifiedHumanHuskRenderer extends MobEntityRenderer<ZombifiedHuman
 
     private static final Identifier TEXTURE =
             new Identifier("minecraft", "textures/entity/zombie/husk.png");
-
-    private static final float FEMALE_ARM_SCALE = 0.82f;
-    private static final float MALE_ARM_SCALE = 1.0f;
+    private static final float FEMALE_ARM_WIDTH_SCALE = 0.75F;
+    private static final float CHILD_SCALE = 0.7F;
 
     public ZombifiedHumanHuskRenderer(EntityRendererFactory.Context context) {
-        super(context, new ZombieEntityModel<>(context.getPart(EntityModelLayers.HUSK)), 0.5F);
+        super(context, createModel(context.getPart(EntityModelLayers.HUSK)), 0.5F);
+    }
+
+    private static ZombieEntityModel<ZombifiedHumanHuskEntity> createModel(ModelPart root) {
+        return new ZombieEntityModel<>(root) {
+            @Override
+            public void setAngles(ZombifiedHumanHuskEntity entity, float limbAngle, float limbDistance,
+                                  float animationProgress, float headYaw, float headPitch) {
+                super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+                this.child = false;
+            }
+        };
     }
 
     @Override
     public void render(ZombifiedHumanHuskEntity entity, float yaw, float tickDelta, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light) {
-        BipedModelAccessor accessor = (BipedModelAccessor) this.getModel();
-        ModelPart leftArm = accessor.getLeftArm();
-        ModelPart rightArm = accessor.getRightArm();
-
-        float armScale = entity.isFemale() ? FEMALE_ARM_SCALE : MALE_ARM_SCALE;
-        leftArm.xScale = armScale;
-        leftArm.zScale = armScale;
-        rightArm.xScale = armScale;
-        rightArm.zScale = armScale;
-
+        applyArmWidth(this.getModel(), entity.isFemale() ? FEMALE_ARM_WIDTH_SCALE : 1.0F);
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
     @Override
     protected void scale(ZombifiedHumanHuskEntity entity, MatrixStack matrices, float amount) {
         if (entity.isBaby()) {
-            matrices.scale(0.5F, 0.5F, 0.5F);
+            matrices.scale(CHILD_SCALE, CHILD_SCALE, CHILD_SCALE);
         }
+    }
+
+    private static void applyArmWidth(ZombieEntityModel<?> model, float widthScale) {
+        BipedModelAccessor accessor = (BipedModelAccessor) model;
+        ModelPart leftArm = accessor.getLeftArm();
+        ModelPart rightArm = accessor.getRightArm();
+        leftArm.xScale = widthScale;
+        rightArm.xScale = widthScale;
+        leftArm.yScale = rightArm.yScale = 1.0F;
+        leftArm.zScale = rightArm.zScale = 1.0F;
     }
 
     @Override

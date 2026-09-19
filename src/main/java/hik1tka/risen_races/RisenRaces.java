@@ -24,8 +24,6 @@ public class RisenRaces implements ModInitializer {
         ModSounds.registerSounds();
         ModVillagerReplacement.register();
         ModZombieReplacement.register();
-        ModDrownedReplacement.register();
-        ModHuskReplacement.register();
     }
 
     public static Identifier id(String path) {

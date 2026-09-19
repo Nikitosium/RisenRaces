@@ -38,6 +38,12 @@ public class ModZombieReplacement {
         replacement.refreshPositionAndAngles(original.getX(), original.getY(), original.getZ(),
                 original.getYaw(), original.getPitch());
 
+        // Заміна має успадкувати вік ванільного моба. Інакше baby zombie,
+        // drowned або husk після підміни стає дорослим кастомним зомбі.
+        if (original instanceof ZombieEntity originalZombie) {
+            replacement.setBaby(originalZombie.isBaby());
+        }
+
         if (replacement instanceof IZombifiedHuman zombified) {
             zombified.rollRandomSpawnData();
         }

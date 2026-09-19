@@ -143,6 +143,16 @@ public class HumanEntity extends HumanoidEntity implements IGenderedEntity {
         return this.isBaby() ? 0.7f : 1.0f;
     }
 
+    /**
+     * Рендерер зменшує дитину до 70% дорослої моделі. Хітбокс має повторювати
+     * цей самий масштаб, інакше по візуально маленькій дитині можна влучити
+     * поза її тілом.
+     */
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(getScaleFactor());
+    }
+
     public void setSkinId(int id) {
         this.dataTracker.set(SKIN_ID, id);
     }
