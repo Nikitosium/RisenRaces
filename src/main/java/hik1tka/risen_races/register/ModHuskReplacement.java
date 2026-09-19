@@ -2,10 +2,7 @@ package hik1tka.risen_races.register;
 
 import hik1tka.risen_races.entity.zombie.ZombifiedHumanHuskEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.entity.mob.HuskEntity;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.Items;
 
 public class ModHuskReplacement {
 
